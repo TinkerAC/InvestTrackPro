@@ -38,7 +38,7 @@
                 out.println("<td>" + investment.getName() + "</td>");
                 out.println("<td>" + investment.getInitialValue() + "</td>");
                 out.println("<td>" + investment.getCurrentValue() + "</td>");
-                out.println("<td><a href='investment?id=" + investment.getInvestmentId() + "'>查看详情</a></td>");
+                out.println("<td><a href='investment/details?id=" + investment.getInvestmentId() + "'>查看详情</a></td>");
                 out.println("</tr>");
             }
             out.println("</table>");

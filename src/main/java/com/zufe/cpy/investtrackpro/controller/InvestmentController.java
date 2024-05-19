@@ -1,5 +1,6 @@
 package com.zufe.cpy.investtrackpro.controller;
 
+
 import com.zufe.cpy.investtrackpro.model.Investment;
 import com.zufe.cpy.investtrackpro.model.InvestmentRecord;
 import jakarta.servlet.ServletException;
@@ -23,9 +24,12 @@ public class InvestmentController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         String action = request.getPathInfo();
+        String investmentId = request.getParameter("id");
+
         if (action == null) {
             action = "/";
         }
+
 
         switch (action) {
             case "/":
@@ -35,7 +39,12 @@ public class InvestmentController extends HttpServlet {
                 searchInvestments(request, response);
                 break;
             case "/details":
-                showInvestmentDetails(request, response);
+                if (investmentId != null) {
+                    request.setAttribute("investmentId", investmentId);
+                    showInvestmentDetails(request, response);
+                } else {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                }
                 break;
             case "/records":
                 showInvestmentRecords(request, response);
@@ -54,8 +63,10 @@ public class InvestmentController extends HttpServlet {
 
     private void showInvestmentDetails(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        Long investmentId = Long.parseLong(request.getParameter("id"));
+        int investmentId = Integer.parseInt((String) request.getAttribute("investmentId"));
+
         Investment investment = investmentService.getInvestmentById(investmentId);
+
         request.setAttribute("investment", investment);
         request.getRequestDispatcher("/WEB-INF/views/investment-details.jsp").forward(request, response);
     }

@@ -24,7 +24,7 @@ public class InvestmentService {
         return investmentDao.search(criteria);
     }
 
-    public Investment getInvestmentById(Long id) {
+    public Investment getInvestmentById(int id) {
         return investmentDao.findById(id);
     }
 

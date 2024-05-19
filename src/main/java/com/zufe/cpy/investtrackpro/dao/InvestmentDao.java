@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 public class InvestmentDao {
-    public Investment findById(Long investmentId) {
+    public Investment findById(int investmentId) {
         Connection conn = DBUtils.getConnection();
         String sql = "SELECT * FROM investment WHERE investment_id=?";
         PreparedStatement ps = null;
@@ -31,6 +31,8 @@ public class InvestmentDao {
                 investment.setExpectedReturn(rs.getBigDecimal("expected_return"));
                 investment.setRiskLevel(rs.getBigDecimal("risk_level"));
                 investment.setCreatedAt(rs.getTimestamp("created_at"));
+                investment.setInitialValue(rs.getBigDecimal("initial_value"));
+                investment.setCurrentValue(rs.getBigDecimal("current_value"));
                 return investment;
             }
         } catch (Exception e) {
