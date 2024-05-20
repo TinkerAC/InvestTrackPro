@@ -12,6 +12,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +26,7 @@ public class InvestmentController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
         String action = request.getPathInfo();
         String investmentId = request.getParameter("id");
 
@@ -83,9 +86,13 @@ public class InvestmentController extends HttpServlet {
         // 从请求参数中获取搜索条件
 
 
-        Map<String, String> criteria = Map.of(
-                "category", request.getParameter("category"),
-                "riskLevel", request.getParameter("riskLevel"));
+        Map<String, String> criteria = new HashMap<>();
+        criteria.put("category", request.getParameter("category"));
+        criteria.put("riskLevel", request.getParameter("riskLevel"));
+
+        //当搜索条件为空时，删除空的搜索条件
+        criteria.entrySet().removeIf(entry -> entry.getValue() == null || entry.getValue().isEmpty());
+
 
         List<Investment> investments = investmentService.searchInvestments(criteria);
 

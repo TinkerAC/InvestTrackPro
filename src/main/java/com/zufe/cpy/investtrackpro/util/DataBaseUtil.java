@@ -5,7 +5,7 @@ import java.sql.*;
 public class DataBaseUtil {
     private static final String userName = "root";
     private static final String password = "mysql";
-    private static final String url = "jdbc:mysql://localhost:3306/invest_track_pro";
+    private static final String url = "jdbc:mysql://localhost:3306/invest_track_pro?useUnicode=true&characterEncoding=UTF-8";
 
     static {
         try {

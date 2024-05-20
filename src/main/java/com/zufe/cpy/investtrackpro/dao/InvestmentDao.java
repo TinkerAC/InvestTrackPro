@@ -82,34 +82,66 @@ public class InvestmentDao {
     }
 
     public List<Investment> search(Map<String, String> criteria) {
+
+        // SQL字段名映射
+        Map<String, String> sqlVar = Map.of(
+                "investmentId", "investment_id",
+                "name", "name",
+                "description", "description",
+                "category", "category",
+                "initialValue", "initial_value",
+                "currentValue", "current_value",
+                "expectedReturn", "expected_return",
+                "riskLevel", "risk_level",
+                "createdAt", "created_at",
+                "updatedAt", "updated_at"
+        );
+
+
         Connection connection = DataBaseUtil.getConnection();
         StringBuilder sql = new StringBuilder("SELECT * FROM investment");
         PreparedStatement ps = null;
         ResultSet rs = null;
+        List<Investment> investments = new ArrayList<>();
 
-        for (int i = 0; i < criteria.size(); i++) {
-            if (i == 0) {
-                sql.append(" WHERE ");
-            }
-            sql.append(criteria.keySet().toArray()[i]);
-            sql.append(" = ");
-            sql.append(criteria.values().toArray()[i]);
+        //构建PreparedStatement sql语句
+        if (criteria != null && !criteria.isEmpty()) {
+            sql.append(" WHERE ");
+            int i = 0;
+            for (Map.Entry<String, String> entry : criteria.entrySet()) {
+                if (i > 0) {
+                    sql.append(" AND ");
+                }
+                sql.append(sqlVar.get(entry.getKey())).append(" = ?");
 
-            if (i != criteria.size() - 1) {
-                sql.append(" AND ");
+                i++;
             }
         }
-        System.out.println(sql);
+
+
         try {
             ps = connection.prepareStatement(sql.toString());
+            int index = 1;
+
+            //设置PreparedStatement参数
+            for (Map.Entry<String, String> entry : criteria.entrySet()) {
+                ps.setString(index, entry.getValue());
+                index++;
+            }
+            System.out.println(ps.toString());
+
             rs = ps.executeQuery();
-            List<Investment> investments = new ArrayList<>();
+
             while (rs.next()) {
                 Investment investment = new Investment();
+
+                investment.setInvestmentId(rs.getInt("investment_id"));
                 investment.setName(rs.getString("name"));
                 investment.setDescription(rs.getString("description"));
                 investment.setCategory(rs.getString("category"));
                 investment.setExpectedReturn(rs.getBigDecimal("expected_return"));
+                investment.setInitialValue(rs.getBigDecimal("initial_value"));
+                investment.setCurrentValue(rs.getBigDecimal("current_value"));
                 investment.setRiskLevel(rs.getBigDecimal("risk_level"));
                 investment.setCreatedAt(rs.getTimestamp("created_at"));
                 investments.add(investment);
@@ -119,8 +151,10 @@ public class InvestmentDao {
         } finally {
             DataBaseUtil.closeJDBC(connection, ps, rs);
         }
-        return null;
+
+        return investments;
     }
+
 
     public void save(Investment investment) {
         insert(investment);

@@ -46,16 +46,17 @@
             <artifactId>mysql-connector-j</artifactId>
             <version>8.3.0</version>
         </dependency>
-        <!-- JSTL for Jakarta EE -->
-
-        <!-- https://mvnrepository.com/artifact/jakarta.servlet.jsp.jstl/jakarta.servlet.jsp.jstl-api -->
+        <!-- 使用兼容的 JSTL 版本 -->
         <dependency>
             <groupId>jakarta.servlet.jsp.jstl</groupId>
             <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
-            <version>3.0.0</version>
+            <version>2.0.0</version>
         </dependency>
-
-
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+            <version>2.0.0</version>
+        </dependency>
     </dependencies>
 
 

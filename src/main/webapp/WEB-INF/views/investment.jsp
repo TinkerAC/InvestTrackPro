@@ -5,8 +5,9 @@
   Time: 15:47
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 <%@ page import="com.zufe.cpy.investtrackpro.model.User" %>
 <%@ page import="com.zufe.cpy.investtrackpro.model.Investment" %>
 <%@ page import="java.util.List" %>
@@ -56,6 +57,7 @@
         <form action="investment/search" method="GET">
             <label for="category">类型:</label>
             <select name="category" id="category">
+                <option value="">不限</option>
                 <option value="股票">股票</option>
                 <option value="债券">债券</option>
                 <option value="基金">基金</option>
@@ -65,6 +67,7 @@
 
             <label for="riskLevel">风险等级:</label>
             <select name="riskLevel" id="riskLevel">
+                <option value="">不限</option>
                 <option value="1">低风险</option>
                 <option value="2">中低风险</option>
                 <option value="3">中风险</option>
@@ -75,28 +78,28 @@
             <button type="submit">搜索</button>
         </form>
 
-
+        //如果有投资信息，则显示表格
         <c:if test="${not empty investments}">
-            <form action='investment/search' method='post'>
-                <table border='1'>
+
+            <table border='1'>
+                <tr>
+                    <th>投资ID</th>
+                    <th>投资名称</th>
+                    <th>初始市值</th>
+                    <th>当前市值</th>
+                    <th>操作</th>
+                </tr>
+                <c:forEach var="investment" items="${investments}">
                     <tr>
-                        <th>投资ID</th>
-                        <th>投资名称</th>
-                        <th>初始市值</th>
-                        <th>当前市值</th>
-                        <th>操作</th>
+                        <td>${investment.investmentId}</td>
+                        <td>${investment.name}</td>
+                        <td>${investment.initialValue}</td>
+                        <td>${investment.currentValue}</td>
+                        <td><a href='investment/details?id=${investment.investmentId}'>查看详情</a></td>
                     </tr>
-                    <c:forEach var="investment" items="${investments}">
-                        <tr>
-                            <td>${investment.investmentId}</td>
-                            <td>${investment.name}</td>
-                            <td>${investment.initialValue}</td>
-                            <td>${investment.currentValue}</td>
-                            <td><a href='investment/details?id=${investment.investmentId}'>查看详情</a></td>
-                        </tr>
-                    </c:forEach>
-                </table>
-            </form>
+                </c:forEach>
+            </table>
+
         </c:if>
     </c:when>
     <c:otherwise>
