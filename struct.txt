@@ -1,0 +1,51 @@
+InvestTrackPro/
+│
+├── src/main/java/
+│   ├── com/investtrackpro/
+│   │   ├── controller/                # 控制器层，处理请求和响应
+│   │   │   ├── UserController.java    # 用户注册、登录、管理
+│   │   │   ├── InvestmentController.java  # 投资项目浏览、筛选、详细信息
+│   │   │   ├── PortfolioController.java   # 投资记录管理、收益计算
+│   │   │   ├── AdminController.java       # 管理员功能管理
+│   │   │
+│   │   ├── model/                     # 数据模型层，定义实体类
+│   │   │   ├── User.java              # 用户实体
+│   │   │   ├── Investment.java        # 投资项目实体
+│   │   │   ├── Portfolio.java         # 投资组合实体
+│   │   │
+│   │   ├── service/                   # 服务层，业务逻辑处理
+│   │   │   ├── UserService.java       # 用户相关业务逻辑
+│   │   │   ├── InvestmentService.java # 投资项目相关业务逻辑
+│   │   │   ├── PortfolioService.java  # 投资组合相关业务逻辑
+│   │   │
+│   │   ├── dao/                       # 数据访问层，与数据库交互
+│   │   │   ├── UserDao.java           # 用户数据访问
+│   │   │   ├── InvestmentDao.java     # 投资项目数据访问
+│   │   │   ├── PortfolioDao.java      # 投资组合数据访问
+│   │   │
+│   │   ├── util/                      # 工具类，通用功能
+│   │   │   ├── DatabaseUtil.java      # 数据库连接和管理
+│   │   │   ├── SecurityUtil.java      # 数据加密与安全
+│
+├── src/main/resources/                # 资源文件
+│   ├── META-INF/
+│   │   ├── persistence.xml            # JPA配置文件
+│   ├── application.properties         # 应用程序配置文件
+│
+├── src/main/webapp/                   # Web应用资源
+│   ├── WEB-INF/
+│   │   ├── web.xml                    # Web应用配置文件
+│   │   ├── views/                     # JSP页面
+│   │   │   ├── index.jsp              # 主页
+│   │   │   ├── login.jsp              # 登录页面
+│   │   │   ├── register.jsp           # 注册页面
+│   │   │   ├── investment.jsp         # 投资项目浏览页面
+│   │   │   ├── portfolio.jsp          # 投资组合页面
+│   │   │   ├── admin.jsp              # 管理员管理页面
+│   │   │
+│   │   ├── css/                       # 样式表
+│   │   │   ├── style.css              # 通用样式
+│   │   ├── js/                        # JavaScript文件
+│   │   │   ├── script.js              # 通用脚本
+│
+└── pom.xml                            # Maven项目配置文件

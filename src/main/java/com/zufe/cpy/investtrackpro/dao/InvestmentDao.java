@@ -2,7 +2,7 @@ package com.zufe.cpy.investtrackpro.dao;
 
 import com.zufe.cpy.investtrackpro.model.Investment;
 import com.zufe.cpy.investtrackpro.model.InvestmentRecord;
-import com.zufe.cpy.investtrackpro.util.DBUtils;
+import com.zufe.cpy.investtrackpro.util.DataBaseUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class InvestmentDao {
     public Investment findById(int investmentId) {
-        Connection conn = DBUtils.getConnection();
+        Connection conn = DataBaseUtil.getConnection();
         String sql = "SELECT * FROM investment WHERE investment_id=?";
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -38,7 +38,7 @@ public class InvestmentDao {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            DBUtils.closeJDBC(conn, ps, rs);
+            DataBaseUtil.closeJDBC(conn, ps, rs);
         }
         return null;
     }
@@ -49,7 +49,7 @@ public class InvestmentDao {
      * @return 所有投资项目
      */
     public List<Investment> findAll() {
-        Connection conn = DBUtils.getConnection();
+        Connection conn = DataBaseUtil.getConnection();
         String sql = "SELECT * FROM investment";
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -76,43 +76,30 @@ public class InvestmentDao {
             e.printStackTrace();
 
         } finally {
-            DBUtils.closeJDBC(conn, ps, rs);
+            DataBaseUtil.closeJDBC(conn, ps, rs);
         }
         return null;
     }
 
     public List<Investment> search(Map<String, String> criteria) {
-        Connection connection = DBUtils.getConnection();
-        StringBuilder sql = new StringBuilder("SElECt * FROM investment");
+        Connection connection = DataBaseUtil.getConnection();
+        StringBuilder sql = new StringBuilder("SELECT * FROM investment");
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        if (!criteria.isEmpty()) {
-            sql.append(" WHERE ");
-            for (Map.Entry<String, String> entry : criteria.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
+        for (int i = 0; i < criteria.size(); i++) {
+            if (i == 0) {
+                sql.append(" WHERE ");
+            }
+            sql.append(criteria.keySet().toArray()[i]);
+            sql.append(" = ");
+            sql.append(criteria.values().toArray()[i]);
 
-                switch (key) {
-                    case "name":
-                        sql.append("name LIKE '%").append(value).append("%' AND ");
-                        break;
-                    case "category":
-                        sql.append("category='").append(value).append("' AND ");
-                        break;
-                    case "expected_return":
-                        sql.append("expected_return>=").append(value).append(" AND ");
-                        break;
-                    case "risk_level":
-                        sql.append("risk_level<=").append(value).append(" AND ");
-                        break;
-                    default:
-                        break;
-                }
-                sql = new StringBuilder(sql.substring(0, sql.length() - 5));
-
+            if (i != criteria.size() - 1) {
+                sql.append(" AND ");
             }
         }
+        System.out.println(sql);
         try {
             ps = connection.prepareStatement(sql.toString());
             rs = ps.executeQuery();
@@ -130,7 +117,7 @@ public class InvestmentDao {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            DBUtils.closeJDBC(connection, ps, rs);
+            DataBaseUtil.closeJDBC(connection, ps, rs);
         }
         return null;
     }
@@ -140,7 +127,7 @@ public class InvestmentDao {
     }
 
     public void insert(Investment investment) {
-        Connection conn = DBUtils.getConnection();
+        Connection conn = DataBaseUtil.getConnection();
         String sql = "INSERT INTO investment(name, description, category, expected_return, risk_level) VALUES(?,?,?,?,?)";
         PreparedStatement ps = null;
         try {
@@ -154,7 +141,7 @@ public class InvestmentDao {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            DBUtils.closeJDBC(conn, ps, null);
+            DataBaseUtil.closeJDBC(conn, ps, null);
 
         }
     }

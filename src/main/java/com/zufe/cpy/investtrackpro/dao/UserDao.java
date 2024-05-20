@@ -1,7 +1,7 @@
 package com.zufe.cpy.investtrackpro.dao;
 
 import com.zufe.cpy.investtrackpro.model.User;
-import com.zufe.cpy.investtrackpro.util.DBUtils;
+import com.zufe.cpy.investtrackpro.util.DataBaseUtil;
 import com.zufe.cpy.investtrackpro.util.SecurityUtil;
 
 import java.sql.Statement;
@@ -29,7 +29,7 @@ public class UserDao {
      */
     public int insert(User user) {
         String sql = "INSERT INTO user (username, password, email, phone, first_name, last_name, address) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (Connection connection = DBUtils.getConnection();
+        try (Connection connection = DataBaseUtil.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, user.getUsername());
@@ -61,7 +61,7 @@ public class UserDao {
      */
     public boolean deleteUser(User user) {
 
-        connection = DBUtils.getConnection();
+        connection = DataBaseUtil.getConnection();
         String sql = "DELETE FROM user WHERE username = ?";
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -74,7 +74,7 @@ public class UserDao {
             e.printStackTrace();
             return false;
         } finally {
-            DBUtils.closeJDBC(connection, ps, rs);
+            DataBaseUtil.closeJDBC(connection, ps, rs);
         }
     }
 
@@ -92,7 +92,7 @@ public class UserDao {
         if (userId == -1) {
             return false;
         }
-        connection = DBUtils.getConnection();
+        connection = DataBaseUtil.getConnection();
         String sql = "UPDATE user SET username=?,password=?,email=?,phone=?,first_name=?,last_name=?,address=? WHERE user_id=?";
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -112,7 +112,7 @@ public class UserDao {
             e.printStackTrace();
             return false;
         } finally {
-            DBUtils.closeJDBC(connection, ps, rs);
+            DataBaseUtil.closeJDBC(connection, ps, rs);
         }
     }
 
@@ -123,7 +123,7 @@ public class UserDao {
      * @return 如果找到返回User对象，否则返回null
      */
     public User findByUsername(String username) {
-        connection = DBUtils.getConnection();
+        connection = DataBaseUtil.getConnection();
         String sql = "SELECT * FROM user WHERE username = ?";
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -146,7 +146,7 @@ public class UserDao {
             e.printStackTrace();
             return null;
         } finally {
-            DBUtils.closeJDBC(connection, ps, rs);
+            DataBaseUtil.closeJDBC(connection, ps, rs);
         }
     }
 
@@ -154,7 +154,7 @@ public class UserDao {
         if (!SecurityUtil.isValidEmail(email)) {
             return null;
         }
-        connection = DBUtils.getConnection();
+        connection = DataBaseUtil.getConnection();
         String sql = "SELECT * FROM user WHERE email = ?";
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -180,7 +180,7 @@ public class UserDao {
             e.printStackTrace();
             return null;
         } finally {
-            DBUtils.closeJDBC(connection, ps, rs);
+            DataBaseUtil.closeJDBC(connection, ps, rs);
         }
     }
 

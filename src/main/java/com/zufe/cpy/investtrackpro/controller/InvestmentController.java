@@ -3,10 +3,11 @@ package com.zufe.cpy.investtrackpro.controller;
 
 import com.zufe.cpy.investtrackpro.model.Investment;
 import com.zufe.cpy.investtrackpro.model.InvestmentRecord;
+import com.zufe.cpy.investtrackpro.service.InvestmentService;
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
-import com.zufe.cpy.investtrackpro.service.InvestmentService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -22,7 +23,7 @@ public class InvestmentController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+        request.setCharacterEncoding("UTF-8");
         String action = request.getPathInfo();
         String investmentId = request.getParameter("id");
 
@@ -58,7 +59,7 @@ public class InvestmentController extends HttpServlet {
     private void showAllInvestments(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Investment> investments = investmentService.getAllInvestments();
         request.setAttribute("investments", investments);
-        request.getRequestDispatcher("/WEB-INF/views/investment-list.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/investment.jsp").forward(request, response);
     }
 
     private void showInvestmentDetails(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -79,13 +80,28 @@ public class InvestmentController extends HttpServlet {
     }
 
     private void searchInvestments(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // 从请求参数中获取搜索条件
+
+
         Map<String, String> criteria = Map.of(
                 "category", request.getParameter("category"),
-                "riskLevel", request.getParameter("riskLevel")
-        );
+                "riskLevel", request.getParameter("riskLevel"));
+
         List<Investment> investments = investmentService.searchInvestments(criteria);
+
+        // 设置请求属性，传递到 JSP
         request.setAttribute("investments", investments);
-        request.getRequestDispatcher("/WEB-INF/views/investment-list.jsp").forward(request, response);
+
+        // 获取请求分派器，转发到 JSP 页面
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/investmentList.jsp");
+
+        // 禁止浏览器或其他缓存此内容，因为内容是动态生成的
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+        response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+        response.setDateHeader("Expires", 0); // Proxies.
+
+        // 将请求转发到 JSP，JSP 会处理数据并输出 HTML
+        dispatcher.include(request, response);
     }
 
 

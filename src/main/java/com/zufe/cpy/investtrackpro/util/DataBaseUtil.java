@@ -2,7 +2,7 @@ package com.zufe.cpy.investtrackpro.util;
 
 import java.sql.*;
 
-public class DBUtils {
+public class DataBaseUtil {
     private static final String userName = "root";
     private static final String password = "mysql";
     private static final String url = "jdbc:mysql://localhost:3306/invest_track_pro";
@@ -49,7 +49,7 @@ public class DBUtils {
     }
 
     public static void main(String[] args) throws SQLException {
-        Connection conn = DBUtils.getConnection();
+        Connection conn = DataBaseUtil.getConnection();
         PreparedStatement ps = conn.prepareStatement("select * from user");
         ResultSet rs = ps.executeQuery();
 
