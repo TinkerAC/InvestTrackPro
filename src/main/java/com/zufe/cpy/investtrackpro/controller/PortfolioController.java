@@ -1,7 +1,8 @@
 package com.zufe.cpy.investtrackpro.controller;
 
 import com.zufe.cpy.investtrackpro.model.InvestmentRecord;
-import com.investtrackpro.service.PortfolioService;
+import com.zufe.cpy.investtrackpro.model.User;
+import com.zufe.cpy.investtrackpro.service.PortfolioService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -64,33 +65,37 @@ public class PortfolioController extends HttpServlet {
 
     private void viewPortfolio(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // 获取当前用户的投资组合
-        String userId = (String) request.getSession().getAttribute("userId");
-        List<InvestmentRecord> portfolioList = portfolioService.getPortfolioByUserId(Long.parseLong(userId));
+        User user = (User) request.getSession().getAttribute("user");
+        List<InvestmentRecord> portfolioList = portfolioService.getPortfolioByUserId(Integer.parseInt(String.valueOf(user.getUserId())));
         request.setAttribute("portfolioList", portfolioList);
         request.getRequestDispatcher("/WEB-INF/views/portfolio.jsp").forward(request, response);
+
     }
 
-    private void generateReport(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void generateReport(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, UnsupportedOperationException {
         // 生成投资组合报告
-        String userId = (String) request.getSession().getAttribute("userId");
-        Portfolio report = portfolioService.generateReport(Long.parseLong(userId));
-        request.setAttribute("report", report);
-        request.getRequestDispatcher("/WEB-INF/views/report.jsp").forward(request, response);
+
+        throw new UnsupportedOperationException("Not supported yet.");
+
     }
 
     private void addInvestment(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // 添加投资项目到投资组合
-        String userId = (String) request.getSession().getAttribute("userId");
+
+
         String investmentId = request.getParameter("investmentId");
-        portfolioService.addInvestmentToPortfolio(Long.parseLong(userId), Long.parseLong(investmentId));
+
+        portfolioService.addInvestmentRecord(new InvestmentRecord()
+
         response.sendRedirect(request.getContextPath() + "/portfolio/view");
     }
 
     private void removeInvestment(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // 从投资组合中移除投资项目
+
         String userId = (String) request.getSession().getAttribute("userId");
         String investmentId = request.getParameter("investmentId");
         portfolioService.removeInvestmentFromPortfolio(Long.parseLong(userId), Long.parseLong(investmentId));
         response.sendRedirect(request.getContextPath() + "/portfolio/view");
+
     }
 }
