@@ -10,25 +10,23 @@
 
 <table border="1">
     <tr>
-        <th>资产编号</th>
-        <th>资产名称</th>
-        <th>资产类型</th>
-        <th>资产数量</th>
-        <th>资产单位</th>
-        <th>资产价格</th>
-        <th>资产总价</th>
-    </tr>
-    <c:forEach items="${requestScope.assets}" var="asset">
-        <tr>
-            <td>${asset.id}</td>
-            <td>${asset.name}</td>
-            <td>${asset.type}</td>
-            <td>${asset.number}</td>
-            <td>${asset.unit}</td>
-            <td>${asset.price}</td>
-            <td>${asset.totalPrice}</td>
-        </tr>
-    </c:forEach>
+        <th>资产id</th>
+        <th>投资项目id</th>
+        <th>投资项目名</th>
+        <th>投资项目分类</th>
+        <th>持有数量</th>
 
+    </tr>
+    <c:forEach items="${assets}" var="asset">
+    <tr>
+        <td>${asset.assetId}</td>
+        <td>${asset.investmentId}</td>
+        <td>${requestScope.investmentMap.get(asset.investmentId).name}</td>
+        <td>${requestScope.investmentMap.get(asset.investmentId).category}</td>
+        <td>${asset.amount}</td>
+
+
+    </tr>
+    </c:forEach>
 </body>
 </html>

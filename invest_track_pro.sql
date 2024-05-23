@@ -1,21 +1,49 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : localhost
+ Source Server         : MyConnection
  Source Server Type    : MySQL
- Source Server Version : 80400
+ Source Server Version : 80036
  Source Host           : localhost:3306
  Source Schema         : invest_track_pro
 
  Target Server Type    : MySQL
- Target Server Version : 80400
+ Target Server Version : 80036
  File Encoding         : 65001
 
- Date: 23/05/2024 12:05:05
+ Date: 23/05/2024 16:39:04
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for asset
+-- ----------------------------
+DROP TABLE IF EXISTS `asset`;
+CREATE TABLE `asset`  (
+  `asset_id` int(0) NOT NULL AUTO_INCREMENT COMMENT 'asset_id',
+  `user_id` int(0) NULL DEFAULT NULL COMMENT '用户id',
+  `investment_id` int(0) NULL DEFAULT NULL COMMENT '投资项目的id',
+  `amount` double NULL DEFAULT NULL COMMENT '持有数量',
+  `created_at` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
+  `update_at` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '上次更新时间',
+  PRIMARY KEY (`asset_id`) USING BTREE,
+  INDEX `user_id`(`user_id`) USING BTREE,
+  INDEX `investment_id`(`investment_id`) USING BTREE,
+  CONSTRAINT `asset_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `asset_ibfk_2` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of asset
+-- ----------------------------
+INSERT INTO `asset` VALUES (1, 2, 116, 0, '2024-05-23 16:37:50', '2024-05-23 16:37:51');
+INSERT INTO `asset` VALUES (2, 2, 123, 2.5, '2024-05-23 16:37:50', '2024-05-23 16:37:51');
+INSERT INTO `asset` VALUES (3, 2, 114, 2, '2024-05-23 16:37:50', '2024-05-23 16:37:51');
+INSERT INTO `asset` VALUES (4, 2, 112, 1246, '2024-05-23 16:37:50', '2024-05-23 16:37:51');
+INSERT INTO `asset` VALUES (5, 2, 113, 26.6, '2024-05-23 16:37:50', '2024-05-23 16:37:51');
+INSERT INTO `asset` VALUES (6, 2, 117, 22, '2024-05-23 16:37:50', '2024-05-23 16:37:51');
 
 -- ----------------------------
 -- Table structure for investment
@@ -83,18 +111,36 @@ CREATE TABLE `investment_record`  (
   `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '状态',
   `created_at` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时的时间戳',
   `updated_at` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '上次更新时的时间戳',
+  `asset_id` int(0) NULL DEFAULT NULL COMMENT '用户资产id',
   PRIMARY KEY (`investment_record_id`) USING BTREE,
   INDEX `user_id`(`user_id`) USING BTREE,
   INDEX `investment_id`(`investment_id`) USING BTREE,
+  INDEX `asset_id`(`asset_id`) USING BTREE,
   CONSTRAINT `investment_record_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT `investment_record_ibfk_2` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+  CONSTRAINT `investment_record_ibfk_2` FOREIGN KEY (`investment_id`) REFERENCES `investment` (`investment_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `investment_record_ibfk_3` FOREIGN KEY (`asset_id`) REFERENCES `asset` (`asset_id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of investment_record
 -- ----------------------------
-INSERT INTO `investment_record` VALUES (3, 111, 2, 12, 120000, NULL, '进行中', '2024-05-22 16:53:06', '2024-05-22 16:53:06');
-INSERT INTO `investment_record` VALUES (4, 111, 2, 0.1, 120000, NULL, '进行中', '2024-05-22 16:55:41', '2024-05-22 16:55:41');
+INSERT INTO `investment_record` VALUES (3, 111, 2, 12, 120000, NULL, '进行中', '2024-05-22 16:53:06', '2024-05-22 16:53:06', NULL);
+INSERT INTO `investment_record` VALUES (4, 111, 2, 0.1, 120000, NULL, '进行中', '2024-05-22 16:55:41', '2024-05-22 16:55:41', NULL);
+INSERT INTO `investment_record` VALUES (5, 112, 2, 12, 55000, NULL, '进行中', '2024-05-23 14:30:57', '2024-05-23 14:30:57', NULL);
+INSERT INTO `investment_record` VALUES (6, 113, 2, 22, 75200, NULL, '进行中', '2024-05-23 14:33:14', '2024-05-23 14:33:14', NULL);
+INSERT INTO `investment_record` VALUES (7, 112, 2, 123, 55000, NULL, '进行中', '2024-05-23 14:44:17', '2024-05-23 14:44:17', NULL);
+INSERT INTO `investment_record` VALUES (8, 112, 2, 123, 55000, NULL, '进行中', '2024-05-23 14:44:22', '2024-05-23 14:44:22', NULL);
+INSERT INTO `investment_record` VALUES (9, 111, 2, 1, 120000, NULL, '进行中', '2024-05-23 14:48:04', '2024-05-23 14:48:04', NULL);
+INSERT INTO `investment_record` VALUES (10, 111, 2, 1, 120000, NULL, '进行中', '2024-05-23 14:48:29', '2024-05-23 14:48:29', NULL);
+INSERT INTO `investment_record` VALUES (11, 116, 2, 2, 180000, NULL, '进行中', '2024-05-23 15:32:52', '2024-05-23 15:32:52', NULL);
+INSERT INTO `investment_record` VALUES (12, 123, 2, 2.5, 115000, '买入', '进行中', '2024-05-23 15:35:55', '2024-05-23 15:35:55', NULL);
+INSERT INTO `investment_record` VALUES (13, 114, 2, 2, 130000, '买入', '进行中', '2024-05-23 15:49:54', '2024-05-23 15:49:54', 3);
+INSERT INTO `investment_record` VALUES (14, 112, 2, 1234, 55000, '买入', '进行中', '2024-05-23 15:55:14', '2024-05-23 15:55:14', 4);
+INSERT INTO `investment_record` VALUES (15, 113, 2, 12, 75200, '买入', '进行中', '2024-05-23 15:56:50', '2024-05-23 15:56:50', 5);
+INSERT INTO `investment_record` VALUES (16, 113, 2, 12.6, 75200, '买入', '进行中', '2024-05-23 15:59:52', '2024-05-23 15:59:52', 5);
+INSERT INTO `investment_record` VALUES (17, 113, 2, 2, 75200, '买入', '进行中', '2024-05-23 16:14:34', '2024-05-23 16:14:34', 5);
+INSERT INTO `investment_record` VALUES (18, 117, 2, 22, 31000, '买入', '进行中', '2024-05-23 16:29:54', '2024-05-23 16:29:54', 6);
+INSERT INTO `investment_record` VALUES (19, 112, 2, 12, 55000, '买入', '进行中', '2024-05-23 16:37:34', '2024-05-23 16:37:34', 4);
 
 -- ----------------------------
 -- Table structure for user

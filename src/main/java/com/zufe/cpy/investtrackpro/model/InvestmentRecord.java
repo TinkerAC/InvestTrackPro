@@ -12,13 +12,14 @@ public class InvestmentRecord {
     private String status;
     private Timestamp createdAt;
     private Timestamp updatedAt;
+    private int assetId;
 
 
     // Constructors
     public InvestmentRecord() {
     }
 
-    public InvestmentRecord(int investmentRecordId, int investmentId, int userId, Double amount, Double currentPrize, String status, String operation, Timestamp createdAt, Timestamp updatedAt) {
+    public InvestmentRecord(int investmentRecordId, int investmentId, int userId, Double amount, Double currentPrize, String status, String operation, Timestamp createdAt, Timestamp updatedAt, int assetId) {
         this.investmentRecordId = investmentRecordId;
         this.investmentId = investmentId;
         this.userId = userId;
@@ -28,7 +29,7 @@ public class InvestmentRecord {
         this.operation = operation;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-
+        this.assetId = assetId;
     }
 
 
@@ -103,6 +104,14 @@ public class InvestmentRecord {
 
     public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public int getAssetId() {
+        return assetId;
+    }
+
+    public void setAssetId(int assetId) {
+        this.assetId = assetId;
     }
 }
 

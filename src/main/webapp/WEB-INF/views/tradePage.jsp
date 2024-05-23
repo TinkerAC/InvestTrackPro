@@ -8,6 +8,8 @@
 
 <h1>交易页面</h1>
 
+<span style="color: red; ">${requestScope.message}</span>
+
 <c:if test="${not empty requestScope.investment}">
     <p>当前交易信息</p>
     <p>投资id：${requestScope.investment.investmentId}</p>
@@ -19,10 +21,6 @@
         <input type="hidden" name="investmentId" value="${requestScope.investment.investmentId}">
         <input type="submit" value="提交">
     </form>
-</c:if>
-
-<c:if test="${empty requestScope.investment}">
-    <p>没有交易信息。</p>
 </c:if>
 
 </body>
