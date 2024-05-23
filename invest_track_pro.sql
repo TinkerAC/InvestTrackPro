@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : MyConnection
+ Source Server         : localhost
  Source Server Type    : MySQL
- Source Server Version : 80036
+ Source Server Version : 80400
  Source Host           : localhost:3306
  Source Schema         : invest_track_pro
 
  Target Server Type    : MySQL
- Target Server Version : 80036
+ Target Server Version : 80400
  File Encoding         : 65001
 
- Date: 21/05/2024 22:28:52
+ Date: 23/05/2024 12:05:05
 */
 
 SET NAMES utf8mb4;
@@ -26,9 +26,9 @@ CREATE TABLE `investment`  (
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '投资项目名',
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '投资项目描述',
   `category` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '投资项目分类',
-  `initial_value` decimal(65, 0) NULL DEFAULT NULL COMMENT '初始市值',
-  `current_value` decimal(65, 0) NULL DEFAULT NULL COMMENT '当前市值',
-  `expected_return` decimal(65, 0) NULL DEFAULT NULL COMMENT '预期回报',
+  `initial_value` double NULL DEFAULT NULL COMMENT '初始市值',
+  `current_value` double NULL DEFAULT NULL COMMENT '当前市值',
+  `expected_return` double NULL DEFAULT NULL COMMENT '预期回报',
   `risk_level` int(0) NULL DEFAULT 0 COMMENT '风险等级',
   `created_at` timestamp(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6) COMMENT '创建时间戳',
   `update_at` timestamp(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6) COMMENT '上次更新时间戳',
@@ -75,8 +75,14 @@ INSERT INTO `investment` VALUES (140, '铜期货投资', '专注于国际铜市�
 DROP TABLE IF EXISTS `investment_record`;
 CREATE TABLE `investment_record`  (
   `investment_record_id` int(0) NOT NULL AUTO_INCREMENT COMMENT '投资记录id',
-  `user_id` int(0) NULL DEFAULT NULL COMMENT '用户id',
   `investment_id` int(0) NULL DEFAULT NULL COMMENT '投资选项id',
+  `user_id` int(0) NULL DEFAULT NULL COMMENT '用户id',
+  `amount` double NULL DEFAULT NULL COMMENT '数量',
+  `current_prize` double NULL DEFAULT NULL COMMENT '交易发生时的价格',
+  `operation` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '\"买入\"或\"卖出\"',
+  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '状态',
+  `created_at` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时的时间戳',
+  `updated_at` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '上次更新时的时间戳',
   PRIMARY KEY (`investment_record_id`) USING BTREE,
   INDEX `user_id`(`user_id`) USING BTREE,
   INDEX `investment_id`(`investment_id`) USING BTREE,
@@ -87,6 +93,8 @@ CREATE TABLE `investment_record`  (
 -- ----------------------------
 -- Records of investment_record
 -- ----------------------------
+INSERT INTO `investment_record` VALUES (3, 111, 2, 12, 120000, NULL, '进行中', '2024-05-22 16:53:06', '2024-05-22 16:53:06');
+INSERT INTO `investment_record` VALUES (4, 111, 2, 0.1, 120000, NULL, '进行中', '2024-05-22 16:55:41', '2024-05-22 16:55:41');
 
 -- ----------------------------
 -- Table structure for user

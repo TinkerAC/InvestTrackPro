@@ -20,6 +20,7 @@
         }
     }
 %>
+
 <form action="login" method="post">
     <label for="email">邮箱:</label>
     <input type="text" id="email" name="email" required>

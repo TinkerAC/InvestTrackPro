@@ -28,11 +28,11 @@ public class InvestmentDao {
                 investment.setName(rs.getString("name"));
                 investment.setDescription(rs.getString("description"));
                 investment.setCategory(rs.getString("category"));
-                investment.setExpectedReturn(rs.getBigDecimal("expected_return"));
-                investment.setRiskLevel(rs.getBigDecimal("risk_level"));
+                investment.setExpectedReturn(rs.getDouble("expected_return"));
+                investment.setRiskLevel(rs.getInt("risk_level"));
                 investment.setCreatedAt(rs.getTimestamp("created_at"));
-                investment.setInitialValue(rs.getBigDecimal("initial_value"));
-                investment.setCurrentValue(rs.getBigDecimal("current_value"));
+                investment.setInitialValue(rs.getDouble("initial_value"));
+                investment.setCurrentValue(rs.getDouble("current_value"));
                 return investment;
             }
         } catch (Exception e) {
@@ -64,10 +64,10 @@ public class InvestmentDao {
                 investment.setName(rs.getString("name"));
                 investment.setDescription(rs.getString("description"));
                 investment.setCategory(rs.getString("category"));
-                investment.setInitialValue(rs.getBigDecimal("initial_value"));
-                investment.setCurrentValue(rs.getBigDecimal("current_value"));
-                investment.setExpectedReturn(rs.getBigDecimal("expected_return"));
-                investment.setRiskLevel(rs.getBigDecimal("risk_level"));
+                investment.setInitialValue(rs.getDouble("initial_value"));
+                investment.setCurrentValue(rs.getDouble("current_value"));
+                investment.setExpectedReturn(rs.getDouble("expected_return"));
+                investment.setRiskLevel(rs.getInt("risk_level"));
                 investment.setCreatedAt(rs.getTimestamp("created_at"));
                 investments.add(investment);
             }
@@ -139,10 +139,10 @@ public class InvestmentDao {
                 investment.setName(rs.getString("name"));
                 investment.setDescription(rs.getString("description"));
                 investment.setCategory(rs.getString("category"));
-                investment.setExpectedReturn(rs.getBigDecimal("expected_return"));
-                investment.setInitialValue(rs.getBigDecimal("initial_value"));
-                investment.setCurrentValue(rs.getBigDecimal("current_value"));
-                investment.setRiskLevel(rs.getBigDecimal("risk_level"));
+                investment.setExpectedReturn(rs.getDouble("expected_return"));
+                investment.setInitialValue(rs.getDouble("initial_value"));
+                investment.setCurrentValue(rs.getDouble("current_value"));
+                investment.setRiskLevel(rs.getInt("risk_level"));
                 investment.setCreatedAt(rs.getTimestamp("created_at"));
                 investments.add(investment);
             }
@@ -169,8 +169,8 @@ public class InvestmentDao {
             ps.setString(1, investment.getName());
             ps.setString(2, investment.getDescription());
             ps.setString(3, investment.getCategory());
-            ps.setBigDecimal(4, investment.getExpectedReturn());
-            ps.setBigDecimal(5, investment.getRiskLevel());
+            ps.setDouble(4, investment.getExpectedReturn());
+            ps.setDouble(5, investment.getRiskLevel());
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();

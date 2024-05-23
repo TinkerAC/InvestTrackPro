@@ -14,12 +14,12 @@ public class User {
     private String address;
     private Timestamp createdAt;
 
-
+    // 无参和全参构造方法
     public User() {
     }
 
-
-    public User(String username, String password, String email, String phone, String firstName, String lastName, String address) {
+    public User(int userId, String username, String password, String email, String phone, String firstName, String lastName, String address, Timestamp createdAt) {
+        this.userId = userId;
         this.username = username;
         this.password = password;
         this.email = email;
@@ -27,6 +27,7 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
+        this.createdAt = createdAt;
     }
 
     public String toString() {
@@ -41,7 +42,7 @@ public class User {
                 '}';
     }
 
-
+    // getter和setter方法
     public Timestamp getCreatedAt() {
         return createdAt;
     }
@@ -104,5 +105,13 @@ public class User {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
     }
 }

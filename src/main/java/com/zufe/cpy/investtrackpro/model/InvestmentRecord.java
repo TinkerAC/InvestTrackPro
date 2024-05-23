@@ -7,7 +7,8 @@ public class InvestmentRecord {
     private int investmentId;
     private int userId;
     private Double amount;
-    private Double purchasePrice;
+    private Double currentPrize;//交易发生时的价格
+    private String operation;//"买入"、"卖出"
     private String status;
     private Timestamp createdAt;
     private Timestamp updatedAt;
@@ -17,15 +18,17 @@ public class InvestmentRecord {
     public InvestmentRecord() {
     }
 
-    public InvestmentRecord(int investmentRecordId, int investmentId, int userId, Double amount, Double purchasePrice, String status, Timestamp createdAt, Timestamp updatedAt) {
+    public InvestmentRecord(int investmentRecordId, int investmentId, int userId, Double amount, Double currentPrize, String status, String operation, Timestamp createdAt, Timestamp updatedAt) {
         this.investmentRecordId = investmentRecordId;
         this.investmentId = investmentId;
         this.userId = userId;
         this.amount = amount;
-        this.purchasePrice = purchasePrice;
+        this.currentPrize = currentPrize;
         this.status = status;
+        this.operation = operation;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+
     }
 
 
@@ -70,12 +73,12 @@ public class InvestmentRecord {
         this.amount = amount;
     }
 
-    public Double getPurchasePrice() {
-        return purchasePrice;
+    public Double getCurrentPrize() {
+        return currentPrize;
     }
 
-    public void setPurchasePrice(Double purchasePrice) {
-        this.purchasePrice = purchasePrice;
+    public void setCurrentPrize(Double currentPrize) {
+        this.currentPrize = currentPrize;
     }
 
     public Timestamp getCreatedAt() {
@@ -88,6 +91,14 @@ public class InvestmentRecord {
 
     public Timestamp getUpdatedAt() {
         return updatedAt;
+    }
+
+    public String getOperation() {
+        return operation;
+    }
+
+    public void setOperation(String operation) {
+        this.operation = operation;
     }
 
     public void setUpdatedAt(Timestamp updatedAt) {

@@ -3,16 +3,16 @@ package com.zufe.cpy.investtrackpro.dao;
 import com.zufe.cpy.investtrackpro.model.User;
 import com.zufe.cpy.investtrackpro.util.DataBaseUtil;
 import com.zufe.cpy.investtrackpro.util.SecurityUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.sql.Statement;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class UserDao {
 
     private Connection connection;
+    private static final Logger logger = LoggerFactory.getLogger(UserDao.class);
+
 
     /**
      * 构造方法，初始化数据库连接
@@ -167,9 +167,12 @@ public class UserDao {
             try (ResultSet resultSet = ps.executeQuery()) {
                 if (resultSet.next()) {
                     User user = new User();
+                    user.setUserId(resultSet.getInt("user_id"));
                     user.setUsername(resultSet.getString("username"));
                     user.setPassword(resultSet.getString("password"));
                     user.setEmail(resultSet.getString("email"));
+                    user.setPhone(resultSet.getString("phone"));
+
                     return user;
                 } else {
                     return null;
@@ -184,27 +187,23 @@ public class UserDao {
         }
     }
 
-    public static void test() {
-        UserDao userDao = new UserDao();
-        System.out.println("正在插入User...");
-        userDao.insert(new User("test_username", "test_password", "test_email", null, null, null, null));
 
-        System.out.println("正在查找User...");
-        User user_0 = userDao.findByUsername("test_username");
-        System.out.println("查找到的User:");
-        System.out.println(user_0);
+    public boolean isExist(int userId) {
+        String sql = "SELECT COUNT(*) FROM user WHERE user_id = ?";
+        try (Connection conn = DataBaseUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
 
-        System.out.println("修改前的User:");
-        System.out.println(user_0);
-        userDao.updateUser(new User("test_username", "updated_password", "updated_email", "123456", null, null, null));
-        System.out.println("修改后的User:");
-        System.out.println(userDao.findByUsername("test_username"));
-
-        System.out.println("正在删除User...");
-
-        userDao.deleteUser(userDao.findByUsername("test_username"));
-
+        } catch (SQLException e) {
+            logger.error("Error finding user by user ID", e);
+        }
+        return false;
     }
+
 
 
 }

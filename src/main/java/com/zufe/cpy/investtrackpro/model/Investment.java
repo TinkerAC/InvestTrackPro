@@ -8,24 +8,28 @@ public class Investment {
     private String name;
     private String description;
     private String category;
-    private BigDecimal initialValue;
-    private BigDecimal currentValue;
-    private BigDecimal expectedReturn;
-    private BigDecimal riskLevel;
+    private double initialValue;
+    private double currentValue;
+    private double expectedReturn;
+    private int riskLevel;
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
     public Investment() {
     }
 
-    public Investment(String name, String description, String category, BigDecimal expectedReturn, BigDecimal riskLevel) {
+    public Investment(int investmentId, String name, String description, String category, double initialValue, double currentValue, double expectedReturn, int riskLevel, Timestamp createdAt, Timestamp updatedAt) {
+        this.investmentId = investmentId;
         this.name = name;
         this.description = description;
         this.category = category;
+        this.initialValue = initialValue;
+        this.currentValue = currentValue;
         this.expectedReturn = expectedReturn;
         this.riskLevel = riskLevel;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
-
 
     // Getters and setters
 
@@ -41,19 +45,19 @@ public class Investment {
         return investmentId;
     }
 
-    public BigDecimal getCurrentValue() {
+    public Double getCurrentValue() {
         return currentValue;
     }
 
-    public void setCurrentValue(BigDecimal currentValue) {
+    public void setCurrentValue(Double currentValue) {
         this.currentValue = currentValue;
     }
 
-    public BigDecimal getInitialValue() {
+    public Double getInitialValue() {
         return initialValue;
     }
 
-    public void setInitialValue(BigDecimal initialValue) {
+    public void setInitialValue(Double initialValue) {
         this.initialValue = initialValue;
     }
 
@@ -85,19 +89,19 @@ public class Investment {
         this.category = category;
     }
 
-    public BigDecimal getExpectedReturn() {
+    public Double getExpectedReturn() {
         return expectedReturn;
     }
 
-    public void setExpectedReturn(BigDecimal expectedReturn) {
+    public void setExpectedReturn(Double expectedReturn) {
         this.expectedReturn = expectedReturn;
     }
 
-    public BigDecimal getRiskLevel() {
+    public int getRiskLevel() {
         return riskLevel;
     }
 
-    public void setRiskLevel(BigDecimal riskLevel) {
+    public void setRiskLevel(int riskLevel) {
         this.riskLevel = riskLevel;
     }
 

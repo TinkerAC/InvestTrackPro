@@ -2,114 +2,112 @@ package com.zufe.cpy.investtrackpro.dao;
 
 import com.zufe.cpy.investtrackpro.model.InvestmentRecord;
 import com.zufe.cpy.investtrackpro.util.DataBaseUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class InvestmentRecordDao {
-
+    private static final Logger logger = LoggerFactory.getLogger(InvestmentRecordDao.class);
 
     public InvestmentRecordDao() {
     }
 
 
-    //增
-    public boolean insertInvestmentRecord(InvestmentRecord investmentRecord) {
-        Connection conn = DataBaseUtil.getConnection();
-        PreparedStatement pstmt = null;
 
-        try {
-            pstmt = conn.prepareStatement("INSERT INTO investment_record (investment_id, user_id, amount, purchase_price, status) VALUES (?, ?, ?, ?, ?)");
+    // 增
+    public boolean insertInvestmentRecord(InvestmentRecord investmentRecord) {
+
+        String sql = "INSERT INTO investment_record (investment_id, user_id, amount, current_prize, status) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = DataBaseUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setInt(1, investmentRecord.getInvestmentId());
             pstmt.setInt(2, investmentRecord.getUserId());
             pstmt.setDouble(3, investmentRecord.getAmount());
-            pstmt.setDouble(4, investmentRecord.getPurchasePrice());
+            pstmt.setDouble(4, investmentRecord.getCurrentPrize());
             pstmt.setString(5, investmentRecord.getStatus());
             pstmt.executeUpdate();
+            return true;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error inserting investment record", e);
             return false;
-        } finally {
-            DataBaseUtil.closeJDBC(conn, pstmt, null);
         }
-        return true;
     }
 
-    //删
+    // 删
     public boolean deleteInvestmentRecord(int investmentRecordId) {
-        Connection conn = DataBaseUtil.getConnection();
-        PreparedStatement pstmt = null;
+        String sql = "DELETE FROM investment_record WHERE investment_record_id = ?";
+        try (Connection conn = DataBaseUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-        try {
-            pstmt = conn.prepareStatement("DELETE FROM investment_record WHERE investment_record_id = ?");
             pstmt.setInt(1, investmentRecordId);
             pstmt.executeUpdate();
+            return true;
+
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error deleting investment record", e);
             return false;
-        } finally {
-            DataBaseUtil.closeJDBC(conn, pstmt, null);
         }
-        return true;
     }
 
-    //查
+    // 查（所有记录）
     public List<InvestmentRecord> findAll() {
-        Connection conn = DataBaseUtil.getConnection();
         List<InvestmentRecord> investmentRecords = new ArrayList<>();
-        try {
-            PreparedStatement ps = conn.prepareStatement("SELECT * FROM investment_record");
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                int id = rs.getInt("InvestmentRecordId");
-                int investmentId = rs.getInt("investmentId");
-                int userId = rs.getInt("userId");
-                double amount = rs.getDouble("amount");
-                double purchasePrice = rs.getDouble("purchasePrice");
-                String status = rs.getString("status");
-                Timestamp createdAt = rs.getTimestamp("createdAt");
-                Timestamp updatedAt = rs.getTimestamp("updatedAt");
-                InvestmentRecord investmentRecord = new InvestmentRecord(id, investmentId, userId, amount, purchasePrice, status, createdAt, updatedAt);
-                investmentRecords.add(investmentRecord);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return investmentRecords;
-    }
+        String sql = "SELECT * FROM investment_record";
+        try (Connection conn = DataBaseUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
-    public List<InvestmentRecord> findByUserId(int userId) {
-        Connection conn = DataBaseUtil.getConnection();
-        List<InvestmentRecord> investmentRecords = new ArrayList<>();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = conn.prepareStatement("SELECT * FROM investment_record WHERE user_id = ?");
-            ps.setInt(1, userId);
-            rs = ps.executeQuery();
             while (rs.next()) {
                 InvestmentRecord investmentRecord = new InvestmentRecord();
                 investmentRecord.setInvestmentRecordId(rs.getInt("investment_record_id"));
                 investmentRecord.setInvestmentId(rs.getInt("investment_id"));
-                investmentRecord.setUserId(userId);
+                investmentRecord.setUserId(rs.getInt("user_id"));
                 investmentRecord.setAmount(rs.getDouble("amount"));
-                investmentRecord.setPurchasePrice(rs.getDouble("purchase_price"));
+                investmentRecord.setCurrentPrize(rs.getDouble("current_prize"));
                 investmentRecord.setStatus(rs.getString("status"));
                 investmentRecord.setCreatedAt(rs.getTimestamp("created_at"));
                 investmentRecord.setUpdatedAt(rs.getTimestamp("updated_at"));
                 investmentRecords.add(investmentRecord);
-
             }
-            return investmentRecords;
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            DataBaseUtil.closeJDBC(conn, ps, rs);
+            logger.error("Error finding all investment records", e);
         }
-        return null;
+        return investmentRecords;
     }
 
+    // 查（按用户ID）
+    public List<InvestmentRecord> findByUserId(int userId) {
+        List<InvestmentRecord> investmentRecords = new ArrayList<>();
+        String sql = "SELECT * FROM investment_record WHERE user_id = ?";
+        try (Connection conn = DataBaseUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    InvestmentRecord investmentRecord = new InvestmentRecord();
+                    investmentRecord.setInvestmentRecordId(rs.getInt("investment_record_id"));
+                    investmentRecord.setInvestmentId(rs.getInt("investment_id"));
+                    investmentRecord.setUserId(userId);
+                    investmentRecord.setAmount(rs.getDouble("amount"));
+                    investmentRecord.setCurrentPrize(rs.getDouble("current_prize"));
+                    investmentRecord.setStatus(rs.getString("status"));
+                    investmentRecord.setCreatedAt(rs.getTimestamp("created_at"));
+                    investmentRecord.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    investmentRecords.add(investmentRecord);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error finding investment records by user ID", e);
+        }
+        return investmentRecords;
+    }
 }
