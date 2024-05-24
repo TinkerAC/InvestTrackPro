@@ -1,5 +1,6 @@
 package com.zufe.cpy.investtrackpro.filter;
 
+import com.zufe.cpy.investtrackpro.model.User;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,7 +9,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-@WebFilter(urlPatterns = {"/user/profile", "/user/logout", "/asset/*"})
+@WebFilter(urlPatterns = {"/user/profile", "/user/logout", "/asset/*", "/admin/*"})
 public class AuthenticationFilter implements Filter {
 
     @Override
@@ -24,11 +25,22 @@ public class AuthenticationFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         HttpSession session = httpRequest.getSession(false);
 
-        //如果用户已登录，则继续请求
+        // 如果用户已登录
         if (session != null && session.getAttribute("user") != null) {
-            chain.doFilter(request, response);
+            User user = (User) session.getAttribute("user");
+            String role = user.getRole();
+            String path = httpRequest.getRequestURI().substring(httpRequest.getContextPath().length());
+
+            // 检查路径是否是 /admin/*
+            if (path.startsWith("/admin") && !role.equals("admin")) {
+                // 如果不是 admin 用户，重定向到权限不足页面
+                httpResponse.sendRedirect(httpRequest.getContextPath() + "/noAccess");
+            } else {
+                // 如果是合法用户，继续请求
+                chain.doFilter(request, response);
+            }
         } else {
-            //如果用户未登录，重定向到登录页面
+            // 如果用户未登录，重定向到登录页面
             httpResponse.sendRedirect(httpRequest.getContextPath() + "/user/login");
         }
     }

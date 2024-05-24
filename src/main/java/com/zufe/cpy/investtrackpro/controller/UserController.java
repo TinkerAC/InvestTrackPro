@@ -105,8 +105,8 @@ public class UserController extends HttpServlet {
         User user = new User();
         user.setUsername(username);
         user.setPassword(SecurityUtil.hashPassword(password));
+        user.setRole("user");
         user.setEmail(email);
-
 
         //调用服务层方法注册用户
         int userId = userService.registerUser(user);
@@ -132,12 +132,18 @@ public class UserController extends HttpServlet {
 
         User user = userService.loginUser(email, password);
 
-        //如果用户存在，登录成功,重定向到来源页面
+
         if (user != null) {
-            HttpSession session = request.getSession();
-            //将用户信息存储到session中
-            session.setAttribute("user", user);
-            response.sendRedirect(request.getContextPath() + "/user/profile");
+            String role = user.getRole();
+            if (role.equals("admin")) {
+                HttpSession session = request.getSession();
+                session.setAttribute("user", user);
+                response.sendRedirect(request.getContextPath() + "/admin");
+            } else {
+                HttpSession session = request.getSession();
+                session.setAttribute("user", user);
+                response.sendRedirect(request.getContextPath() + "/user/profile");
+            }
         } else {
             request.setAttribute("error", "邮箱或密码错误!");
             showLoginForm(request, response);

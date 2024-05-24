@@ -1,6 +1,7 @@
 package com.zufe.cpy.investtrackpro.service;
 
 import com.zufe.cpy.investtrackpro.dao.InvestmentDao;
+import com.zufe.cpy.investtrackpro.dao.InvestmentRecordDao;
 import com.zufe.cpy.investtrackpro.model.Investment;
 import com.zufe.cpy.investtrackpro.model.InvestmentRecord;
 
@@ -10,9 +11,11 @@ import java.util.Map;
 public class InvestmentService {
 
     private final InvestmentDao investmentDao;
+    private final InvestmentRecordDao investmentRecordDao;
 
     public InvestmentService() {
         investmentDao = new InvestmentDao();
+        investmentRecordDao = new InvestmentRecordDao();
     }
 
     public List<Investment> getAllInvestments() {
@@ -28,7 +31,12 @@ public class InvestmentService {
         return investmentDao.findById(id);
     }
 
-    public List<InvestmentRecord> getInvestmentRecords(Long id) {
-        return investmentDao.findRecordsByInvestmentId(id);
+    public List<InvestmentRecord> getInvestmentRecordList() {
+        return investmentRecordDao.findAll();
+    }
+
+
+    public List<Investment> getInvestmentList() {
+        return investmentDao.findAll();
     }
 }

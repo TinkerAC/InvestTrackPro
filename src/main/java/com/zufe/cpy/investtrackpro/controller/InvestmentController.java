@@ -76,8 +76,8 @@ public class InvestmentController extends HttpServlet {
     }
 
     private void showInvestmentRecords(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Long investmentId = Long.parseLong(request.getParameter("id"));
-        List<InvestmentRecord> records = investmentService.getInvestmentRecords(investmentId);
+        int investmentId = Integer.parseInt(request.getParameter("id"));
+        List<InvestmentRecord> records = investmentService.getInvestmentRecordList();
         request.setAttribute("records", records);
         request.getRequestDispatcher("/WEB-INF/views/investment-records.jsp").forward(request, response);
     }

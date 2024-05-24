@@ -13,12 +13,13 @@ public class User {
     private String lastName;
     private String address;
     private Timestamp createdAt;
+    private String role;
 
     // 无参和全参构造方法
     public User() {
     }
 
-    public User(int userId, String username, String password, String email, String phone, String firstName, String lastName, String address, Timestamp createdAt) {
+    public User(int userId, String username, String password, String email, String phone, String firstName, String lastName, String address, Timestamp createdAt, String role) {
         this.userId = userId;
         this.username = username;
         this.password = password;
@@ -28,17 +29,21 @@ public class User {
         this.lastName = lastName;
         this.address = address;
         this.createdAt = createdAt;
+        this.role = role;
     }
 
     public String toString() {
         return "User{" +
-                "username='" + username + '\'' +
+                "userId=" + userId +
+                ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", phone='" + phone + '\'' +
                 ", address='" + address + '\'' +
+                ", createdAt=" + createdAt +
+                ", role=" + role +
                 '}';
     }
 
@@ -113,5 +118,13 @@ public class User {
 
     public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getRole() {
+        return role;
     }
 }

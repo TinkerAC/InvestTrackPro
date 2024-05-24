@@ -155,6 +155,8 @@
 
         <button type="submit">搜索</button>
     </form>
+    <!-- 一个新增投资按钮 -->
+    <button onclick="location.href='<%=request.getContextPath()+"/investment/add"%>'">新增投资</button>
 
     <!-- 如果有投资信息，则显示表格 -->
     <c:if test="${not empty investments}">
@@ -175,7 +177,11 @@
                     <td>${investment.name}</td>
                     <td>${investment.initialValue}</td>
                     <td>${investment.currentValue}</td>
-                    <td><a href='investment/details?id=${investment.investmentId}'>查看详情</a></td>
+                    <td>
+                        <a href='investment/details?id=${investment.investmentId}'>查看详情</a>
+                        <a>href='investment/delete?id=${investment.investmentId}'>删除</a>
+
+                    </td>
                 </tr>
             </c:forEach>
             </tbody>

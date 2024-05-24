@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDao {
 
@@ -132,10 +134,7 @@ public class UserDao {
             ps.setString(1, username);
             try (ResultSet resultSet = ps.executeQuery()) {
                 if (resultSet.next()) {
-                    User user = new User();
-                    user.setUsername(resultSet.getString("username"));
-                    user.setPassword(resultSet.getString("password"));
-                    user.setEmail(resultSet.getString("email"));
+                    User user = new User(rs.getInt("user_id"), rs.getString("username"), rs.getString("password"), rs.getString("email"), rs.getString("phone"), rs.getString("first_name"), rs.getString("last_name"), rs.getString("address"), rs.getTimestamp("created_at"), rs.getString("role"));
                     return user;
                 } else {
                     return null;
@@ -154,6 +153,7 @@ public class UserDao {
         if (!SecurityUtil.isValidEmail(email)) {
             return null;
         }
+
         connection = DataBaseUtil.getConnection();
         String sql = "SELECT * FROM user WHERE email = ?";
         PreparedStatement ps = null;
@@ -161,23 +161,17 @@ public class UserDao {
         try {
 
             ps = connection.prepareStatement(sql);
-
             ps.setString(1, email);
 
-            try (ResultSet resultSet = ps.executeQuery()) {
-                if (resultSet.next()) {
-                    User user = new User();
-                    user.setUserId(resultSet.getInt("user_id"));
-                    user.setUsername(resultSet.getString("username"));
-                    user.setPassword(resultSet.getString("password"));
-                    user.setEmail(resultSet.getString("email"));
-                    user.setPhone(resultSet.getString("phone"));
 
-                    return user;
-                } else {
-                    return null;
-                }
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                User user = new User(rs.getInt("user_id"), rs.getString("username"), rs.getString("password"), rs.getString("email"), rs.getString("phone"), rs.getString("first_name"), rs.getString("last_name"), rs.getString("address"), rs.getTimestamp("created_at"), rs.getString("role"));
+                return user;
+            } else {
+                return null;
             }
+
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -204,6 +198,41 @@ public class UserDao {
         return false;
     }
 
+
+    public List<User> findAll() {
+        Connection connection = DataBaseUtil.getConnection();
+        String sql = "SELECT * FROM user";
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<User> users = new ArrayList<>();
+
+        try {
+            ps = connection.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) { // 使用 while 以遍历所有结果
+                int userId = rs.getInt("user_id");
+                String username = rs.getString("username");
+                String password = rs.getString("password");
+                String email = rs.getString("email");
+                String phone = rs.getString("phone");
+                String firstName = rs.getString("first_name");
+                String lastName = rs.getString("last_name");
+                String address = rs.getString("address");
+                Timestamp createdAt = rs.getTimestamp("created_at");
+                String role = rs.getString("role");
+
+                User user = new User(userId, username, password, email, phone, firstName, lastName, address, createdAt, role);
+                users.add(user);
+            }
+
+        } catch (SQLException e) {
+            logger.error("Error finding all users", e);
+        } finally {
+            DataBaseUtil.closeJDBC(connection, ps, rs);
+        }
+        return users; // 总是返回 users 列表，无论是否有结果
+    }
 
 
 }
