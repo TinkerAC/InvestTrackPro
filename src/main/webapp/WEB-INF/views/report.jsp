@@ -77,7 +77,7 @@
     <table>
         <thead>
         <tr>
-            <th>投资项目ID</th>
+            <th>投资项目</th>
             <th>开盘价</th>
             <th>收盘价</th>
             <th>最高价</th>
@@ -91,15 +91,22 @@
         <tbody>
         <c:forEach var="change" items="${investmentDailyChanges}">
             <tr>
-                <td>${change.investmentId}</td>
-                <td>${change.openingValue}</td>
-                <td>${change.closingValue}</td>
-                <td>${change.highestValue}</td>
-                <td>${change.lowestValue}</td>
-                <td>${change.volume}</td>
-                <td>${change.changePercent}%</td>
-                <td>${change.changeValue}</td>
+                <td>
+                    <c:forEach var="investment" items="${investments}">
+                        <c:if test="${investment.investmentId == change.investmentId}">
+                            ${investment.name}
+                        </c:if>
+                    </c:forEach>
+                </td>
+                <td><fmt:formatNumber value="${change.openingValue}" type="number" maxFractionDigits="2"/></td>
+                <td><fmt:formatNumber value="${change.closingValue}" type="number" maxFractionDigits="2"/></td>
+                <td><fmt:formatNumber value="${change.highValue}" type="number" maxFractionDigits="2"/></td>
+                <td><fmt:formatNumber value="${change.lowValue}" type="number" maxFractionDigits="2"/></td>
+                <td><fmt:formatNumber value="${change.volume}" type="number" maxFractionDigits="0"/></td>
+                <td><fmt:formatNumber value="${change.changePercent}" type="number" maxFractionDigits="2"/>%</td>
+                <td><fmt:formatNumber value="${change.changeValue}" type="number" maxFractionDigits="2"/></td>
                 <td><fmt:formatDate value="${change.date}" pattern="yyyy-MM-dd"/></td>
+
             </tr>
         </c:forEach>
         </tbody>
@@ -113,142 +120,47 @@
             <th>投资项目ID</th>
             <th>持有数量</th>
             <th>持有收益</th>
+            <th>实现收益</th>
         </tr>
         </thead>
+
         <tbody>
         <c:forEach var="asset" items="${assets}">
             <tr>
                 <td>${asset.assetId}</td>
                 <td>${asset.investmentId}</td>
-                <td>${asset.amount}</td>
-                <%
-                    List<InvestmentRecord> investmentRecords = (List<InvestmentRecord>) request.getAttribute("investmentRecords");
-                    double totalBuyCost = 0;
-                    double totalSellIncome = 0;
+                <td><fmt:formatNumber value="${asset.amount}" type="number" maxFractionDigits="2"/></td>
+                <td><fmt:formatNumber value="${asset.holdingProfit}" type="number" maxFractionDigits="2"/></td>
+                <td><fmt:formatNumber value="${asset.totalSellRevenue}" type="number" maxFractionDigits="2"/></td>
 
-
-                    // 遍历交易记录
-                    for (InvestmentRecord investmentRecord : investmentRecords) {
-                        if (investmentRecord.getOperation().equals("buy")) {
-                            totalBuyCost += investmentRecord.getAmount() * investmentRecord.getCurrentPrize();
-                            currentHoldQuantity += investmentRecord.getAmount();
-                        } else if (investmentRecord.getOperation().equals("sell")) {
-                            totalSellIncome += investmentRecord.getAmount() * investmentRecord.getCurrentPrize();
-                            currentHoldQuantity -= investmentRecord.getAmount();
-                        }
-                    }
-
-                    // 计算当前持有部分的价值
-                    double currentHoldValue = asset.currentPrize * asset.amount;
-
-                    // 计算持有收益
-                    double holdingProfit = currentHoldValue + totalSellIncome - totalBuyCost;
-                    request.setAttribute("holdingProfit", holdingProfit);
-                %>
-                <td>${holdingProfit}</td>
             </tr>
         </c:forEach>
         </tbody>
     </table>
 
-    <h2>持有收益分析</h2>
-    <table>
-        <thead>
-        <tr>
-            <th>InvestmentId</th>
-            <th>Amount</th>
-            <th>Initial Value</th>
-            <th>Current Value</th>
-            <th>Change Value</th>
-            <th>Change Percent</th>
-        </tr>
-        </thead>
-        <tbody>
-        <c:forEach var="asset" items="${assets}">
-            <c:set var="initialValue" value="0"/>
-            <c:set var="currentValue" value="0"/>
-            <c:forEach var="change" items="${investmentDailyChanges}">
-                <c:if test="${change.investmentId == asset.investmentId}">
-                    <c:set var="initialValue" value="${change.openingValue}" scope="page"/>
-                    <c:set var="currentValue" value="${change.closingValue}" scope="page"/>
-                </c:if>
-            </c:forEach>
-            <c:set var="changeValue" value="${(currentValue - initialValue) * asset.amount}" scope="page"/>
-            <c:set var="changePercent" value="${((currentValue - initialValue) / initialValue) * 100}" scope="page"/>
-            <tr>
-                <td>${asset.investmentId}</td>
-                <td>${asset.amount}</td>
-                <td>${initialValue}</td>
-                <td>${currentValue}</td>
-                <td>${changeValue}</td>
-                <td>${changePercent}%</td>
-            </tr>
-        </c:forEach>
-        </tbody>
-    </table>
-
-    <h2>每日投资变化图表</h2>
-    <canvas id="investmentChart" width="400" height="200"></canvas>
-    <script>
-        var ctx = document.getElementById('investmentChart').getContext('2d');
-        var investmentData = {
-            labels: [
-                <c:forEach var="change" items="${investmentDailyChanges}">
-                '<fmt:formatDate value="${change.date}" pattern="yyyy-MM-dd"/>',
-                </c:forEach>
-            ],
-            datasets: [{
-                label: 'Closing Value',
-                data: [
-                    <c:forEach var="change" items="${investmentDailyChanges}">
-                    ${change.closingValue},
-                    </c:forEach>
-                ],
-                borderColor: 'rgba(75, 192, 192, 1)',
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                fill: false,
-                borderWidth: 1
-            }]
-        };
-        var investmentChart = new Chart(ctx, {
-            type: 'line',
-            data: investmentData,
-            options: {
-                responsive: true,
-                title: {
-                    display: true,
-                    text: '每日投资变化'
-                },
-                scales: {
-                    xAxes: [{
-                        type: 'time',
-                        time: {
-                            unit: 'day',
-                            tooltipFormat: 'll',
-                            displayFormats: {
-                                'day': 'MMM D'
-                            }
-                        },
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Date'
-                        }
-                    }],
-                    yAxes: [{
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Value'
-                        }
-                    }]
-                }
-            }
-        });
-    </script>
 
     <h2>资产总额</h2>
+    <c:set var="totalAsset" value="${0}" scope="page"/>
     <p class="total-asset">
-        用户总资产: ${totalAsset}
+        用户总资产:
+        <c:forEach var="investmentRecord" items="${investmentRecords}">
+            <c:choose>
+                <c:when test="${investmentRecord.operation == '买入'}">
+                    <c:set var="totalAsset"
+                           value="${totalAsset + investmentRecord.amount * investmentRecord.currentPrize}"
+                           scope="page"/>
+                </c:when>
+                <c:when test="${investmentRecord.operation == '卖出'}">
+                    <c:set var="totalAsset"
+                           value="${totalAsset - investmentRecord.amount * investmentRecord.currentPrize}"
+                           scope="page"/>
+                </c:when>
+            </c:choose>
+        </c:forEach>
+        ${totalAsset}元
     </p>
+
 </div>
 </body>
 </html>
+<jsp:include page="footer.jsp"/>

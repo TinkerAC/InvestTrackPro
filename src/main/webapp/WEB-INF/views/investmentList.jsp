@@ -25,3 +25,4 @@
         </tr>
     </c:forEach>
 </table>
+<jsp:include page="footer.jsp"/>

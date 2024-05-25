@@ -1,9 +1,6 @@
 package com.zufe.cpy.investtrackpro.service;
 
-import com.zufe.cpy.investtrackpro.dao.InvestmentDailyChangeDao;
-import com.zufe.cpy.investtrackpro.dao.InvestmentDao;
-import com.zufe.cpy.investtrackpro.dao.InvestmentRecordDao;
-import com.zufe.cpy.investtrackpro.dao.UserDao;
+import com.zufe.cpy.investtrackpro.dao.*;
 import com.zufe.cpy.investtrackpro.model.Investment;
 import com.zufe.cpy.investtrackpro.model.InvestmentDailyChange;
 import com.zufe.cpy.investtrackpro.model.InvestmentRecord;
@@ -22,7 +19,7 @@ public class AdminService {
     private final Random random = new Random();
     private final InvestmentDailyChangeDao investmentDailyChangeDao = new InvestmentDailyChangeDao();
     private final InvestmentRecordDao investmentRecordDao = new InvestmentRecordDao();
-
+    private final AssetDao assetDao = new AssetDao();
     public void resetSystem() {
         List<Investment> investments = investmentDao.findAll();
         for (Investment investment : investments) {
@@ -33,6 +30,7 @@ public class AdminService {
         }
         investmentRecordDao.deleteAll();
         investmentDailyChangeDao.deleteAll();
+        assetDao.deleteAll();
     }
 
 
@@ -56,7 +54,6 @@ public class AdminService {
             double highValue = Math.max(openingValue, closingValue) + random.nextDouble() * maxChangePercent;
             double lowValue = Math.min(openingValue, closingValue) - random.nextDouble() * maxChangePercent;
             double volume = 1000.0 + random.nextDouble() * 10000.0;//随机生成交易量
-
 
             // 创建并设置 InvestmentDailyChange 对象的属性
             InvestmentDailyChange record = new InvestmentDailyChange();

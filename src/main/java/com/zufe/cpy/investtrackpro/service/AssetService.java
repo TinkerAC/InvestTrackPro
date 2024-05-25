@@ -64,34 +64,67 @@ public class AssetService {
         return assetDao.insertAsset(asset);
     }
 
-    //从交易记录中更新资产
     public void updateAsset(int userId) {
         List<Asset> assets = assetDao.findByUserId(userId);
-        //遍历所有资产,将买入的资产加到资产中，将卖出的资产减去
 
         for (Asset asset : assets) {
             List<InvestmentRecord> investmentRecords = investmentRecordDao.find(userId, asset.getInvestmentId());
-            Double amount = 0.0;
-            for (InvestmentRecord investmentRecord : investmentRecords) {
 
-                if (investmentRecord.getOperation() == null) {
-                    continue;
-                }
+            // 计算持有量
+            double amount = 0.0;
+            // 计算总买入成本
+            double totalCost = 0.0;
+            // 计算总卖出收入
+            double totalSellRevenue = 0.0;
+            for (InvestmentRecord investmentRecord : investmentRecords) {
                 if (investmentRecord.getOperation().equals("买入")) {
                     amount += investmentRecord.getAmount();
+                    totalCost += investmentRecord.getAmount() * investmentRecord.getCurrentPrize();
                 } else if (investmentRecord.getOperation().equals("卖出")) {
                     amount -= investmentRecord.getAmount();
-
+                    totalSellRevenue += investmentRecord.getAmount() * investmentRecord.getCurrentPrize();
+                    // 这里需要减去相应卖出的持有成本
+                    totalCost -= investmentRecord.getAmount() * getAverageBuyPrice(investmentRecords, investmentRecord.getAmount());
+                } else {
+                    logger.error("Unknown operation: " + investmentRecord.getOperation());
                 }
-
             }
+
+            // 获取当前单价
+            double currentPrice = investmentDao.findById(asset.getInvestmentId()).getCurrentValue();
+            double currentMarketValue = amount * currentPrice;
+
+            // 持有收益计算
+            double holdingProfit = currentMarketValue - totalCost;
+
+            // 总收益 = 已实现收益 + 持有收益
+            double totalProfit = totalSellRevenue + holdingProfit;
+
+            // 更新资产信息
             asset.setAmount(amount);
+            asset.setHoldingProfit(holdingProfit);
+            asset.setTotalSellRevenue(totalSellRevenue);
+
             assetDao.updateAsset(asset);
-
         }
-
-
     }
+
+    /**
+     * 获取卖出时的平均买入价格，用于减去相应的持有成本
+     */
+    private double getAverageBuyPrice(List<InvestmentRecord> records, double sellAmount) {
+        double buyAmount = 0.0;
+        double buyCost = 0.0;
+        for (InvestmentRecord record : records) {
+            if (record.getOperation().equals("买入")) {
+                buyAmount += record.getAmount();
+                buyCost += record.getAmount() * record.getCurrentPrize();
+            }
+        }
+        return buyCost / buyAmount;
+    }
+
+
 
     //返回资产id
     public int getAssetId(int userId, int investmentId) {

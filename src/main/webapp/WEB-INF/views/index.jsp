@@ -1,21 +1,25 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>JSP - Hello World</title>
-    <!-- Bootstrap CSS -->
+    <title>InvestTrackPro</title>
+    <!-- 样式和脚本 -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <style>
         body {
             background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
         }
 
         .container {
             margin-top: 50px;
+            flex: 1; /* 让 .container 占据剩余空间 */
         }
 
         .btn-custom {
@@ -43,5 +47,6 @@
         <button class="btn btn-info btn-custom" onclick="location.href='user/logout'">注销</button>
     </div>
 </div>
+<jsp:include page="footer.jsp" />
 </body>
 </html>

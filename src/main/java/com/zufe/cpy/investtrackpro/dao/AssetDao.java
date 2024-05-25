@@ -16,6 +16,7 @@ public class AssetDao {
 
     private static final Logger logger = LoggerFactory.getLogger(InvestmentRecordDao.class);
 
+    //根据资产id查找资产
     public List<Asset> findByUserId(int userId) {
         Connection conn = DataBaseUtil.getConnection();
         String sql = "SELECT * FROM asset WHERE user_id=?";
@@ -28,14 +29,18 @@ public class AssetDao {
             rs = pstmt.executeQuery();
             List<Asset> assets = new ArrayList<>();
             while (rs.next()) {
-                Asset asset = new Asset();
-                asset.setAssetId(rs.getInt("asset_id"));
-                asset.setUserId(rs.getInt("user_id"));
-                asset.setInvestmentId(rs.getInt("investment_id"));
-                asset.setAmount(rs.getDouble("amount"));
-                asset.setCreatedAt(rs.getTimestamp("created_at"));
-                assets.add(asset);
+                assets.add(new Asset(
+                        rs.getInt("asset_id"),
+                        rs.getInt("user_id"),
+                        rs.getInt("investment_id"),
+                        rs.getDouble("amount"),
+                        rs.getTimestamp("created_at"),
+                        rs.getDouble("holding_profit"),
+                        rs.getDouble("total_sell_revenue")
+                ));
+
             }
+
             return assets;
 
         } catch (Exception e) {
@@ -97,17 +102,19 @@ public class AssetDao {
     //改
     public void updateAsset(Asset asset) {
         Connection conn = DataBaseUtil.getConnection();
-        String sql = "UPDATE asset SET amount=?,update_at=? WHERE asset_id=?";
+        String sql = "UPDATE asset SET amount=?, holding_profit=?, total_sell_revenue=? ,updated_at=? WHERE asset_id=?";
 
         PreparedStatement pstmt = null;
 
         try {
             pstmt = conn.prepareStatement(sql);
             pstmt.setDouble(1, asset.getAmount());
-            pstmt.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
-            pstmt.setInt(3, asset.getAssetId());
-            pstmt.executeUpdate();
+            pstmt.setDouble(2, asset.getHoldingProfit());
+            pstmt.setDouble(3, asset.getTotalSellRevenue());
+            pstmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+            pstmt.setInt(5, asset.getAssetId());
 
+            pstmt.executeUpdate();
         } catch (Exception e) {
             logger.error("Error updating asset", e);
         } finally {
@@ -140,4 +147,17 @@ public class AssetDao {
     }
 
 
+    public void deleteAll() {
+        Connection conn = DataBaseUtil.getConnection();
+        String sql = "DELETE FROM asset";
+        PreparedStatement pstmt = null;
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            logger.error("Error deleting all assets", e);
+        } finally {
+            DataBaseUtil.closeJDBC(conn, pstmt, null);
+        }
+    }
 }

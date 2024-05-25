@@ -8,17 +8,20 @@ public class Asset {
     private int investmentId;
     private double amount;
     private Timestamp createdAt;
-
+    private Double holdingProfit;
+    private Double totalSellRevenue;
 
     public Asset() {
     }
 
-    public Asset(int assetId, int userId, int investmentId, double amount, Timestamp createdAt) {
+    public Asset(int assetId, int userId, int investmentId, double amount, Timestamp createdAt,  Double holdingProfit, Double totalSellRevenue) {
         this.assetId = assetId;
         this.userId = userId;
         this.investmentId = investmentId;
         this.amount = amount;
         this.createdAt = createdAt;
+        this.holdingProfit = holdingProfit;
+        this.totalSellRevenue = totalSellRevenue;
     }
 
     public int getAssetId() {
@@ -59,5 +62,23 @@ public class Asset {
 
     public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
+    }
+
+
+
+    public Double getHoldingProfit() {
+        return holdingProfit;
+    }
+
+    public void setHoldingProfit(Double holdingProfit) {
+        this.holdingProfit = holdingProfit;
+    }
+
+    public Double getTotalSellRevenue() {
+        return totalSellRevenue;
+    }
+
+    public void setTotalSellRevenue(Double totalSellRevenue) {
+        this.totalSellRevenue = totalSellRevenue;
     }
 }

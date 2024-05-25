@@ -100,17 +100,22 @@ public class AssetController extends HttpServlet {
     }
 
     private void showReportPage(HttpServletRequest request, HttpServletResponse response) {
-        // 显示用户的投资报告
         User user = (User) request.getSession().getAttribute("user");
+        //更新收益情况
+        assetService.updateAsset(user.getUserId());
+
         List<Asset> assets = assetService.getAssetsByUserId(user.getUserId());
         List<InvestmentRecord> investmentRecords = assetService.getInvestmentRecordsByUserId(user.getUserId());
         List<InvestmentDailyChange> investmentDailyChanges = new ArrayList<>();
         List<Investment> investments = new ArrayList<>();
         for (Asset asset : assets) {
-
             investmentDailyChanges.add(investmentService.getLatestInvestmentDailyChanges(asset.getInvestmentId()));
             investments.add(investmentService.getInvestmentById(asset.getInvestmentId()));
         }
+
+
+
+
         request.setAttribute("assets", assets);
         request.setAttribute("investments", investments);
         request.setAttribute("investmentRecords", investmentRecords);
@@ -167,7 +172,6 @@ public class AssetController extends HttpServlet {
             request.setAttribute("message", "买入失败");
         } else {
             request.setAttribute("message", "买入成功");
-            assetService.updateAsset(user.getUserId());
         }
         request.getRequestDispatcher("/WEB-INF/views/tradePage.jsp").forward(request, response);
 

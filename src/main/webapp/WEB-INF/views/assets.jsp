@@ -66,4 +66,5 @@
 </table>
 <button onclick="window.location.href='report'">查看报告</button>
 </body>
+<jsp:include page="footer.jsp"/>
 </html>
