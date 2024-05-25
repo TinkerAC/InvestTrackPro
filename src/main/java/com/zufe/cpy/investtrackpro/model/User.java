@@ -13,13 +13,14 @@ public class User {
     private String lastName;
     private String address;
     private Timestamp createdAt;
+    private Timestamp updatedAt;
     private String role;
 
     // 无参和全参构造方法
     public User() {
     }
 
-    public User(int userId, String username, String password, String email, String phone, String firstName, String lastName, String address, Timestamp createdAt, String role) {
+    public User(int userId, String username, String password, String email, String phone, String firstName, String lastName, String address, Timestamp createdAt, Timestamp updatedAt, String role) {
         this.userId = userId;
         this.username = username;
         this.password = password;
@@ -29,6 +30,7 @@ public class User {
         this.lastName = lastName;
         this.address = address;
         this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
         this.role = role;
     }
 
@@ -43,17 +45,19 @@ public class User {
                 ", lastName='" + lastName + '\'' +
                 ", address='" + address + '\'' +
                 ", createdAt=" + createdAt +
-                ", role=" + role +
+                ", updatedAt=" + updatedAt +
+                ", role='" + role + '\'' +
                 '}';
     }
 
     // getter和setter方法
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
 
     public int getUserId() {
         return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
@@ -80,6 +84,14 @@ public class User {
         this.email = email;
     }
 
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -96,14 +108,6 @@ public class User {
         this.lastName = lastName;
     }
 
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
     public String getAddress() {
         return address;
     }
@@ -112,19 +116,27 @@ public class User {
         this.address = address;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public Timestamp getCreatedAt() {
+        return createdAt;
     }
 
     public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public Timestamp getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public String getRole() {
         return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

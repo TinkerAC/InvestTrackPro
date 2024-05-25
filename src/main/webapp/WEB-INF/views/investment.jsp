@@ -122,14 +122,6 @@
 <body>
 <div class="container">
     <h1>投资列表</h1>
-    <c:choose>
-        <c:when test="${not empty requestScope.user}">
-            <div class="message">欢迎，${requestScope.user.username}。</div>
-        </c:when>
-        <c:otherwise>
-            <div class="message">您尚未登录!</div>
-        </c:otherwise>
-    </c:choose>
 
     <!-- 一个搜索选项表单 -->
     <form action="investment/search" method="GET">

@@ -134,7 +134,7 @@ public class UserDao {
             ps.setString(1, username);
             try (ResultSet resultSet = ps.executeQuery()) {
                 if (resultSet.next()) {
-                    User user = new User(rs.getInt("user_id"), rs.getString("username"), rs.getString("password"), rs.getString("email"), rs.getString("phone"), rs.getString("first_name"), rs.getString("last_name"), rs.getString("address"), rs.getTimestamp("created_at"), rs.getString("role"));
+                    User user = new User(rs.getInt("user_id"), rs.getString("username"), rs.getString("password"), rs.getString("email"), rs.getString("phone"), rs.getString("first_name"), rs.getString("last_name"), rs.getString("address"), rs.getTimestamp("created_at"), rs.getTimestamp("update_at"), rs.getString("role"));
                     return user;
                 } else {
                     return null;
@@ -166,7 +166,7 @@ public class UserDao {
 
             rs = ps.executeQuery();
             if (rs.next()) {
-                User user = new User(rs.getInt("user_id"), rs.getString("username"), rs.getString("password"), rs.getString("email"), rs.getString("phone"), rs.getString("first_name"), rs.getString("last_name"), rs.getString("address"), rs.getTimestamp("created_at"), rs.getString("role"));
+                User user = new User(rs.getInt("user_id"), rs.getString("username"), rs.getString("password"), rs.getString("email"), rs.getString("phone"), rs.getString("first_name"), rs.getString("last_name"), rs.getString("address"), rs.getTimestamp("created_at"), rs.getTimestamp("updated_at"), rs.getString("role"));
                 return user;
             } else {
                 return null;
@@ -220,9 +220,11 @@ public class UserDao {
                 String lastName = rs.getString("last_name");
                 String address = rs.getString("address");
                 Timestamp createdAt = rs.getTimestamp("created_at");
+                Timestamp updatedAt = rs.getTimestamp("updated_at");
                 String role = rs.getString("role");
 
-                User user = new User(userId, username, password, email, phone, firstName, lastName, address, createdAt, role);
+
+                User user = new User(userId, username, password, email, phone, firstName, lastName, address, createdAt, updatedAt, role);
                 users.add(user);
             }
 

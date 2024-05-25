@@ -1,5 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
+    response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+    response.setHeader("Pragma", "no-cache");
+    response.setDateHeader("Expires", 0);
+%>
 
 <html>
 <head>
@@ -59,5 +64,6 @@
         </tr>
     </c:forEach>
 </table>
+<button onclick="window.location.href='report'">查看报告</button>
 </body>
 </html>

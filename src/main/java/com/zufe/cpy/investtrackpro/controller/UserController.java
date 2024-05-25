@@ -87,7 +87,7 @@ public class UserController extends HttpServlet {
 
     private void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.getSession().invalidate();
-        response.sendRedirect(request.getContextPath() + "/user/login");
+        response.sendRedirect(request.getContextPath() + "/");
     }
 
     private void registerUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

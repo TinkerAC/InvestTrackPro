@@ -1,6 +1,7 @@
 package com.zufe.cpy.investtrackpro.dao;
 
 import com.zufe.cpy.investtrackpro.model.Investment;
+import com.zufe.cpy.investtrackpro.model.InvestmentDailyChange;
 import com.zufe.cpy.investtrackpro.model.InvestmentRecord;
 import com.zufe.cpy.investtrackpro.util.DataBaseUtil;
 
@@ -181,16 +182,27 @@ public class InvestmentDao {
     }
 
     public void update(Investment investment) {
-
+        Connection conn = DataBaseUtil.getConnection();
+        String sql = "UPDATE investment SET name=?, description=?, category=?, expected_return=?, risk_level=?, initial_value=?, current_value=? WHERE investment_id=?";
+        PreparedStatement ps = null;
+        try {
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, investment.getName());
+            ps.setString(2, investment.getDescription());
+            ps.setString(3, investment.getCategory());
+            ps.setDouble(4, investment.getExpectedReturn());
+            ps.setDouble(5, investment.getRiskLevel());
+            ps.setDouble(6, investment.getInitialValue());
+            ps.setDouble(7, investment.getCurrentValue());
+            ps.setInt(8, investment.getInvestmentId());
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DataBaseUtil.closeJDBC(conn, ps, null);
+        }
     }
 
 
-    public void deleteById(Long id) {
 
-    }
-
-
-    public List<InvestmentRecord> findRecordsByInvestmentId(Long investmentId) {
-        return null;
-    }
 }

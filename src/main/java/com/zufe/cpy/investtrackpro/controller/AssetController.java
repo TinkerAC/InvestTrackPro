@@ -1,9 +1,6 @@
 package com.zufe.cpy.investtrackpro.controller;
 
-import com.zufe.cpy.investtrackpro.model.Asset;
-import com.zufe.cpy.investtrackpro.model.Investment;
-import com.zufe.cpy.investtrackpro.model.InvestmentRecord;
-import com.zufe.cpy.investtrackpro.model.User;
+import com.zufe.cpy.investtrackpro.model.*;
 import com.zufe.cpy.investtrackpro.service.AssetService;
 import com.zufe.cpy.investtrackpro.service.InvestmentService;
 import jakarta.servlet.ServletException;
@@ -17,9 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+
 @WebServlet("/asset/*")
 public class AssetController extends HttpServlet {
-
+    private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(AssetController.class);
     private AssetService assetService;
     private InvestmentService investmentService;
 
@@ -47,7 +45,7 @@ public class AssetController extends HttpServlet {
                 viewAsset(request, response);
                 break;
             case "/report"://处理生成报告请求
-                generateReport(request, response);
+                showReportPage(request, response);
                 break;
             default:
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -101,9 +99,28 @@ public class AssetController extends HttpServlet {
 
     }
 
-    private void generateReport(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, UnsupportedOperationException {
-        // 生成投资组合报告
-        throw new UnsupportedOperationException("Not supported yet.");
+    private void showReportPage(HttpServletRequest request, HttpServletResponse response) {
+        // 显示用户的投资报告
+        User user = (User) request.getSession().getAttribute("user");
+        List<Asset> assets = assetService.getAssetsByUserId(user.getUserId());
+        List<InvestmentRecord> investmentRecords = assetService.getInvestmentRecordsByUserId(user.getUserId());
+        List<InvestmentDailyChange> investmentDailyChanges = new ArrayList<>();
+        List<Investment> investments = new ArrayList<>();
+        for (Asset asset : assets) {
+
+            investmentDailyChanges.add(investmentService.getLatestInvestmentDailyChanges(asset.getInvestmentId()));
+            investments.add(investmentService.getInvestmentById(asset.getInvestmentId()));
+        }
+        request.setAttribute("assets", assets);
+        request.setAttribute("investments", investments);
+        request.setAttribute("investmentRecords", investmentRecords);
+        request.setAttribute("investmentDailyChanges", investmentDailyChanges);
+        try {
+            request.getRequestDispatcher("/WEB-INF/views/report.jsp").forward(request, response);
+        } catch (Exception e) {
+            logger.error("Error in showReportPage", e);
+        }
+
     }
 
 

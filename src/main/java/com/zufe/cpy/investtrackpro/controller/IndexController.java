@@ -23,7 +23,7 @@ public class IndexController extends HttpServlet {
         }
 
         switch (action) {
-            case "noAccess":
+            case "/noAccess":
                 showNoAccessPage(request, response);
                 break;
             case "/notFound":
@@ -32,7 +32,7 @@ public class IndexController extends HttpServlet {
             case "/":
                 showIndexPage(request, response);
                 break;
-            case "logout":
+            case "/logout":
                 request.getSession().invalidate();
                 response.sendRedirect(request.getContextPath() + "/");
                 break;

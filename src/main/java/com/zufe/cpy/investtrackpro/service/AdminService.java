@@ -2,13 +2,14 @@ package com.zufe.cpy.investtrackpro.service;
 
 import com.zufe.cpy.investtrackpro.dao.InvestmentDailyChangeDao;
 import com.zufe.cpy.investtrackpro.dao.InvestmentDao;
+import com.zufe.cpy.investtrackpro.dao.InvestmentRecordDao;
 import com.zufe.cpy.investtrackpro.dao.UserDao;
 import com.zufe.cpy.investtrackpro.model.Investment;
 import com.zufe.cpy.investtrackpro.model.InvestmentDailyChange;
+import com.zufe.cpy.investtrackpro.model.InvestmentRecord;
 import com.zufe.cpy.investtrackpro.model.User;
 
 import java.sql.Date;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;
@@ -20,6 +21,7 @@ public class AdminService {
     private final InvestmentDao investmentDao = new InvestmentDao();
     private final Random random = new Random();
     private final InvestmentDailyChangeDao investmentDailyChangeDao = new InvestmentDailyChangeDao();
+    private final InvestmentRecordDao investmentRecordDao = new InvestmentRecordDao();
 
     public void resetSystem() {
         List<Investment> investments = investmentDao.findAll();
@@ -29,6 +31,7 @@ public class AdminService {
             investment.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
             investmentDao.update(investment);
         }
+        investmentRecordDao.deleteAll();
         investmentDailyChangeDao.deleteAll();
     }
 
@@ -75,5 +78,13 @@ public class AdminService {
             investment.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
             investmentDao.update(investment);
         }
+    }
+
+    public List<Investment> getInvestmentList() {
+        return investmentDao.findAll();
+    }
+
+    public List<InvestmentRecord> getInvestmentRecordList() {
+        return investmentRecordDao.findAll();
     }
 }

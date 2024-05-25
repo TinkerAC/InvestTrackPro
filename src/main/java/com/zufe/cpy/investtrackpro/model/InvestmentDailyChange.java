@@ -14,14 +14,13 @@ public class InvestmentDailyChange {
     private Date date;
     private Double volume;
     private Timestamp createdAt;
-    private Timestamp updatedAt;
     private double changePercent;
     private double changeValue;
 
     public InvestmentDailyChange() {
     }
 
-    public InvestmentDailyChange(int changeId, int investmentId, Double openingValue, Double closingValue, Double highValue, Double lowValue, Date date, Double volume, Timestamp createdAt, Timestamp updatedAt, double changePercent, double changeValue) {
+    public InvestmentDailyChange(int changeId, int investmentId, Double openingValue, Double closingValue, Double highValue, Double lowValue, Date date, Double volume, Timestamp createdAt, double changePercent, double changeValue) {
         ChangeId = changeId;
         this.investmentId = investmentId;
         this.openingValue = openingValue;
@@ -31,7 +30,7 @@ public class InvestmentDailyChange {
         this.date = date;
         this.volume = volume;
         this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+
         this.changePercent = changePercent;
         this.changeValue = changeValue;
     }
@@ -111,13 +110,6 @@ public class InvestmentDailyChange {
         this.createdAt = createdAt;
     }
 
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 
     public double getChangePercent() {
         return changePercent;

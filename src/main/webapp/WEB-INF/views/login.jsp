@@ -1,5 +1,11 @@
-
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%
+    // 重定向已登录用户
+    if (session.getAttribute("user") != null) {
+        request.setAttribute("message", "您已登录！");
+    }
+%>
 <html>
 <head>
     <title>InvestTrack Pro-登录页</title>
@@ -14,25 +20,29 @@
             height: 100vh;
             margin: 0;
         }
+
         .container {
             background: white;
             padding: 40px;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             max-width: 400px;
             width: 100%;
             text-align: center;
         }
+
         h1 {
             color: #444;
             margin-bottom: 20px;
         }
+
         label {
             display: block;
             margin-top: 20px;
             font-weight: bold;
             text-align: left;
         }
+
         input[type="text"], input[type="password"] {
             padding: 10px;
             border: 1px solid #ccc;
@@ -40,6 +50,7 @@
             width: calc(100% - 22px);
             margin-top: 8px;
         }
+
         .btn {
             margin-top: 20px;
             padding: 12px;
@@ -52,22 +63,27 @@
             color: white;
             transition: background 0.3s;
         }
+
         .btn:hover {
             background: #45a049;
         }
+
         .error {
             color: red;
             margin-top: 20px;
         }
+
         .register {
             margin-top: 30px;
             color: #444;
         }
+
         .register a {
             color: #007BFF;
             text-decoration: none;
             transition: color 0.3s;
         }
+
         .register a:hover {
             color: #0056b3;
         }
@@ -76,14 +92,12 @@
 <body>
 <div class="container">
     <h1>登录页</h1>
-    <%
-        String e = (String) request.getAttribute("error");
-        if (e != null && !e.isEmpty()) {
-    %>
-    <div class="error"><%= e %></div>
-    <%
-        }
-    %>
+    <c:if test="${not empty error}">
+        <div class="error">${error}</div>
+    </c:if>
+    <c:if test="${not empty message}">
+        <div class="error">${message}</div>
+    </c:if>
     <form action="login" method="post">
         <label for="email">邮箱:</label>
         <input type="text" id="email" name="email" required>

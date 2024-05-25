@@ -97,4 +97,9 @@ public class AssetService {
     public int getAssetId(int userId, int investmentId) {
         return assetDao.getAssetId(userId, investmentId);
     }
+
+    //根据用户id返回交易记录
+    public List<InvestmentRecord> getInvestmentRecordsByUserId(int userId) {
+        return investmentRecordDao.findByUserId(userId);
+    }
 }

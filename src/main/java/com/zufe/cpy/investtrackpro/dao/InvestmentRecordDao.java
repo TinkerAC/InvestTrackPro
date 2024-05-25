@@ -58,6 +58,17 @@ public class InvestmentRecordDao {
         }
     }
 
+    public void deleteAll() {
+        String sql = "DELETE FROM investment_record";
+        try (Connection conn = DataBaseUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            logger.error("Error deleting all investment records", e);
+        }
+    }
+
+
     // 查（所有记录）
     public List<InvestmentRecord> findAll() {
         List<InvestmentRecord> investmentRecords = new ArrayList<>();
