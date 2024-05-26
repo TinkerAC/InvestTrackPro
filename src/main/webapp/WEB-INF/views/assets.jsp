@@ -1,70 +1,71 @@
+
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%
-    response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
-    response.setHeader("Pragma", "no-cache");
-    response.setDateHeader("Expires", 0);
-%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的资产</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            color: #444;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #f2f2f2;
-            color: #555;
-        }
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-    </style>
-</head>
-<body>
-<h1>我的资产</h1>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
 
-<table>
-    <tr>
-        <th>资产id</th>
-        <th>投资项目id</th>
-        <th>投资项目名</th>
-        <th>投资项目分类</th>
-        <th>持有数量</th>
-    </tr>
-    <c:forEach items="${assets}" var="asset">
-        <tr>
-            <td>${asset.assetId}</td>
-            <td>${asset.investmentId}</td>
-            <td>${requestScope.investmentMap.get(asset.investmentId).name}</td>
-            <td>${requestScope.investmentMap.get(asset.investmentId).category}</td>
-            <td>${asset.amount}</td>
-        </tr>
-    </c:forEach>
-</table>
-<button onclick="window.location.href='report'">查看报告</button>
-</body>
+</head>
+<body class="bg-gray-50 text-gray-800 p-6">
+<header class="mb-8">
+    <nav class="bg-white shadow p-4 rounded-lg flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-700">我的资产管理</h1>
+        <div>
+            <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600" onclick="window.location.href='userHome'">用户主页</button>
+            <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 ml-4" onclick="window.location.href='logout'">登出</button>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <h1 class="text-3xl font-bold text-center text-gray-700 mb-8">我的资产</h1>
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+            <thead>
+            <tr>
+                <th class="py-4 px-6 bg-gray-200 text-left text-gray-600 font-medium">资产id</th>
+                <th class="py-4 px-6 bg-gray-200 text-left text-gray-600 font-medium">投资项目id</th>
+                <th class="py-4 px-6 bg-gray-200 text-left text-gray-600 font-medium">投资项目名</th>
+                <th class="py-4 px-6 bg-gray-200 text-left text-gray-600 font-medium">投资项目分类</th>
+                <th class="py-4 px-6 bg-gray-200 text-left text-gray-600 font-medium">持有数量</th>
+                <th class="py-4 px-6 bg-gray-200 text-left text-gray-600 font-medium">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <c:forEach items="${assets}" var="asset">
+                <tr class="hover:bg-gray-100">
+                    <td class="py-4 px-6 border-b border-gray-200">${asset.assetId}</td>
+                    <td class="py-4 px-6 border-b border-gray-200">${asset.investmentId}</td>
+                    <td class="py-4 px-6 border-b border-gray-200">${requestScope.investmentMap.get(asset.investmentId).name}</td>
+                    <td class="py-4 px-6 border-b border-gray-200">${requestScope.investmentMap.get(asset.investmentId).category}</td>
+                    <td class="py-4 px-6 border-b border-gray-200">${asset.amount}</td>
+                    <td class="py-4 px-6 border-b border-gray-200">
+                        <button class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+                                onclick="window.location.href='${pageContext.request.contextPath}/investment/details?id=${asset.investmentId}'">
+                            查看详情
+                        </button>
+                    </td>
+
+                </tr>
+            </c:forEach>
+            </tbody>
+        </table>
+    </div>
+    <div class="mt-6 text-center">
+        <button onclick="window.location.href='report'" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+            查看报告
+        </button>
+    </div>
+</main>
+
 <jsp:include page="footer.jsp"/>
+</body>
 </html>

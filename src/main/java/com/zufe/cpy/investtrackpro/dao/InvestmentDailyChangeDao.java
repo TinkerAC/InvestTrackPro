@@ -17,7 +17,7 @@ public class InvestmentDailyChangeDao {
     public List<InvestmentDailyChange> findByInvestmentId(int investmentId) {
         List<InvestmentDailyChange> investmentDailyChanges = new ArrayList<>();
         Connection conn = DataBaseUtil.getConnection();
-        String sql = "select * from investment_daily_change where investment_id = ?";
+        String sql = "select * from investment_daily_change where investment_id = ? order by created_at";
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
@@ -32,7 +32,7 @@ public class InvestmentDailyChangeDao {
                 Double high_value = rs.getDouble("high_value");
                 Double low_value = rs.getDouble("low_value");
                 Date date = rs.getDate("date");
-                Timestamp createdAt = rs.getTimestamp("createdAt");
+                Timestamp createdAt = rs.getTimestamp("created_at");
                 Double changePercent = rs.getDouble("change_percent");
                 Double volume = rs.getDouble("volume");
                 Double changeValue = rs.getDouble("change_value");

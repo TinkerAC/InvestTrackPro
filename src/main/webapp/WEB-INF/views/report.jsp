@@ -9,6 +9,8 @@
 <head>
     <title>数据分析报告</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="css/styles.css" rel="stylesheet">
+
     <style>
         body {
             font-family: 'Arial', sans-serif;

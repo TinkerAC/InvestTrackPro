@@ -4,7 +4,8 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>交易</title>
+    <title>交易</title>    <link href="css/styles.css" rel="stylesheet">
+
     <style>
         body {
             font-family: Arial, sans-serif;

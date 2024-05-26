@@ -38,6 +38,9 @@ public class AssetController extends HttpServlet {
             case "/buy"://处理买入投资请求
                 showInvestmentTradePage(request, response);
                 break;
+            case "/sell"://处理卖出投资请求
+                showInvestmentTradePage(request, response);
+                break;
             case "/"://处理查看投资组合请求
                 viewAsset(request, response);
                 break;
@@ -66,7 +69,7 @@ public class AssetController extends HttpServlet {
                 addBoughtInvestmentRecord(request, response);
                 break;
             case "/sell"://处理卖出投资请求
-                removeInvestment(request, response);
+                addSoldInvestmentRecord(request, response);
                 break;
             case "/view":
                 viewAsset(request, response);
@@ -112,8 +115,6 @@ public class AssetController extends HttpServlet {
             investmentDailyChanges.add(investmentService.getLatestInvestmentDailyChanges(asset.getInvestmentId()));
             investments.add(investmentService.getInvestmentById(asset.getInvestmentId()));
         }
-
-
 
 
         request.setAttribute("assets", assets);
@@ -165,7 +166,8 @@ public class AssetController extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/views/tradePage.jsp").forward(request, response);
             return;
         }
-        boolean isSuccess = assetService.addInvestmentRecord(request, "买入", assetId);
+
+        boolean isSuccess = assetService.addBoughtInvestmentRecord(user.getUserId(), investmentId, assetId, Double.parseDouble(request.getParameter("amount")));
 
 
         if (!isSuccess) {
@@ -174,6 +176,29 @@ public class AssetController extends HttpServlet {
             request.setAttribute("message", "买入成功");
         }
         request.getRequestDispatcher("/WEB-INF/views/tradePage.jsp").forward(request, response);
+
+    }
+
+    private void addSoldInvestmentRecord(HttpServletRequest request, HttpServletResponse response) {
+        User user = (User) request.getSession().getAttribute("user");
+        int investmentId = Integer.parseInt(request.getParameter("investmentId"));
+        int assetId = assetService.getAssetId(user.getUserId(), investmentId);
+
+        //用户持有该资产的数量
+        Double holdingAmount = assetService.getAssetAmount(user.getUserId(), investmentId);
+        Investment investment = investmentService.getInvestmentById(investmentId);
+
+        request.setAttribute("holdingAmount", holdingAmount);
+        request.setAttribute("investment", investment);
+
+        boolean isSuccess = assetService.addBoughtInvestmentRecord(request, "卖出", assetId);
+
+        if (!isSuccess) {
+            request.setAttribute("message", "卖出失败");
+        } else {
+            request.setAttribute("message", "卖出成功");
+        }
+
 
     }
 

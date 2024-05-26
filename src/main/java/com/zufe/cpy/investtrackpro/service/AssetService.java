@@ -8,11 +8,9 @@ import com.zufe.cpy.investtrackpro.model.Asset;
 import com.zufe.cpy.investtrackpro.model.InvestmentRecord;
 import com.zufe.cpy.investtrackpro.model.User;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.List;
 
 
@@ -33,19 +31,17 @@ public class AssetService {
         return assetDao.isAssetExist(userId, investmentId);
     }
 
-    public boolean addInvestmentRecord(HttpServletRequest request, String operation, int assetId) {
-        User user = (User) request.getSession().getAttribute("user");
-        int investmentId = Integer.parseInt(request.getParameter("investmentId"));
+    public boolean addBoughtInvestmentRecord(int userId, int investmentId, int assetId, double amount) {
         Double currentPrize = investmentDao.findById(investmentId).getCurrentValue();
 
 
         InvestmentRecord investmentRecord = new InvestmentRecord();
         investmentRecord.setInvestmentId(investmentId);
-        investmentRecord.setUserId(Integer.parseInt(String.valueOf(user.getUserId())));
-        investmentRecord.setAmount(Double.parseDouble(request.getParameter("amount")));
+        investmentRecord.setUserId(userId);
+        investmentRecord.setAmount(amount);
         investmentRecord.setCurrentPrize(currentPrize);
         investmentRecord.setStatus("进行中");
-        investmentRecord.setOperation(operation);
+        investmentRecord.setOperation("买入");
         investmentRecord.setAssetId(assetId);
 
 
@@ -56,6 +52,13 @@ public class AssetService {
 
         boolean success = investmentRecordDao.insertInvestmentRecord(investmentRecord);
         return success;
+
+    }
+
+    public boolean addSoldInvestmentRecord(HttpServletRequest request, int assetId) {
+        User user = (User) request.getSession().getAttribute("user");
+        int investmentId = Integer.parseInt(request.getParameter("investmentId"));
+        Double currentPrize = investmentDao.findById(investmentId).getCurrentValue();
 
     }
 
@@ -123,7 +126,6 @@ public class AssetService {
         }
         return buyCost / buyAmount;
     }
-
 
 
     //返回资产id

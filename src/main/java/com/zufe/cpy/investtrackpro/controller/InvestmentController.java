@@ -2,6 +2,7 @@ package com.zufe.cpy.investtrackpro.controller;
 
 
 import com.zufe.cpy.investtrackpro.model.Investment;
+import com.zufe.cpy.investtrackpro.model.InvestmentDailyChange;
 import com.zufe.cpy.investtrackpro.model.InvestmentRecord;
 import com.zufe.cpy.investtrackpro.service.InvestmentService;
 import jakarta.servlet.RequestDispatcher;
@@ -10,12 +11,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.util.*;
 
 @WebServlet("/investment/*")
 public class InvestmentController extends HttpServlet {
@@ -46,6 +46,7 @@ public class InvestmentController extends HttpServlet {
                 if (investmentId != null) {
                     request.setAttribute("investmentId", investmentId);
                     showInvestmentDetails(request, response);
+
                 } else {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST);
                 }
@@ -70,6 +71,18 @@ public class InvestmentController extends HttpServlet {
         int investmentId = Integer.parseInt((String) request.getAttribute("investmentId"));
 
         Investment investment = investmentService.getInvestmentById(investmentId);
+
+        List<InvestmentDailyChange> dailyChanges = investmentService.getInvestmentDailyChanges(investmentId);
+
+        List<Timestamp> dates = new ArrayList<>();
+        List<Double> closingValues = new ArrayList<>();
+        for (InvestmentDailyChange dailyChange : dailyChanges) {
+            dates.add(dailyChange.getCreatedAt());
+            closingValues.add(dailyChange.getClosingValue());
+        }
+
+        request.setAttribute("dates", new Gson().toJson(dates));
+        request.setAttribute("values", new Gson().toJson(closingValues));
 
         request.setAttribute("investment", investment);
         request.getRequestDispatcher("/WEB-INF/views/investment-details.jsp").forward(request, response);
