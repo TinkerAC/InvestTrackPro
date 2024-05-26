@@ -191,7 +191,8 @@ public class AssetController extends HttpServlet {
         request.setAttribute("holdingAmount", holdingAmount);
         request.setAttribute("investment", investment);
 
-        boolean isSuccess = assetService.addBoughtInvestmentRecord(request, "卖出", assetId);
+
+        boolean isSuccess = assetService.addSoldInvestmentRecord(request, assetId);
 
         if (!isSuccess) {
             request.setAttribute("message", "卖出失败");
@@ -201,7 +202,6 @@ public class AssetController extends HttpServlet {
 
 
     }
-
 
     private void removeInvestment(HttpServletRequest request, HttpServletResponse response) {
         throw new UnsupportedOperationException("Not supported yet.");
