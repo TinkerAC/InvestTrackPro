@@ -4,8 +4,9 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>交易</title>    <link href="css/styles.css" rel="stylesheet">
-
+    <title>交易</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -18,30 +19,36 @@
             height: 100vh;
             background-color: #f4f4f4;
         }
+
         h1 {
             color: #333;
         }
+
         .container {
             background: #fff;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 400px;
+            max-width: 600px; /* 加宽容器 */
             box-sizing: border-box;
         }
+
         .message {
             color: red;
             margin-bottom: 20px;
         }
+
         form {
             display: flex;
             flex-direction: column;
         }
+
         label {
             margin: 10px 0 5px;
             color: #333;
         }
+
         input[type="number"],
         input[type="submit"] {
             padding: 10px;
@@ -50,6 +57,11 @@
             border-radius: 4px;
             font-size: 16px;
         }
+
+        input[type="radio"] {
+            margin: 0 5px 10px 0;
+        }
+
         input[type="submit"] {
             background-color: #007bff;
             color: #fff;
@@ -57,28 +69,75 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
+
         input[type="submit"]:hover {
             background-color: #0056b3;
         }
     </style>
+    <script>
+        function updateFormAction() {
+            var transactionType = document.querySelector('input[name="transactionType"]:checked').value;
+            var form = document.getElementById('transactionForm');
+            if (transactionType === 'buy') {
+                form.action = '${pageContext.request.contextPath}/asset/buy';
+            } else {
+                form.action = '${pageContext.request.contextPath}/asset/sell';
+            }
+        }
+    </script>
 </head>
-<body>
-<div class="container">
-    <h1>交易页面</h1>
-    <span class="message">${requestScope.message}</span>
-    <c:if test="${not empty requestScope.investment}">
-        <p>当前交易信息</p>
-        <p>投资id：${requestScope.investment.investmentId}</p>
-        <p>当前市值：${requestScope.investment.currentValue}</p>
-        <form action="${pageContext.request.contextPath}/asset/buy" method="post">
-            <label>买入价格：${requestScope.investment.currentValue}</label>
-            <label for="amount">买入数量：</label>
-            <input type="number" id="amount" name="amount" min="0.01" step="0.01" required>
-            <input type="hidden" name="investmentId" value="${requestScope.investment.investmentId}">
-            <input type="submit" value="提交">
-        </form>
-    </c:if>
-</div>
+<body class="bg-gray-50">
+<header class="mb-8 w-full">
+    <nav class="bg-white shadow p-6 rounded-lg flex justify-between items-center w-full max-w-6xl mx-auto">
+        <h1 class="text-2xl font-bold text-gray-700">我的资产管理</h1>
+        <div>
+            <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+                    onclick="window.location.href='userHome'">用户主页
+            </button>
+            <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 ml-4"
+                    onclick="window.location.href='logout'">登出
+            </button>
+        </div>
+    </nav>
+</header>
+<main class="flex-grow w-full ">
+    <div class="container mx-auto">
+        <h1 class="text-center">交易页面</h1>
+        <span class="message">${requestScope.message}</span>
+        <c:if test="${not empty requestScope.investment}">
+            <div class="mb-4">
+                <p>当前交易信息</p>
+                <p>投资名称：${requestScope.investment.name}</p>
+                <p>当前市值：${requestScope.investment.currentValue}</p>
+                <c:if test="${not empty requestScope.asset}">
+                    <p>持有数量: ${requestScope.asset.amount}</p>
+                </c:if>
+                <c:if test="${empty requestScope.asset}">
+                    <p>持有数量: 0</p>
+                </c:if>
+            </div>
+            <form id="transactionForm" method="post" onsubmit="updateFormAction()">
+                <label>交易类型：</label>
+                <div class="flex items-center mb-4">
+                    <input type="radio" id="buy" name="transactionType" value="buy" checked class="mr-2">
+                    <label for="buy" class="mr-4">买入</label>
+                    <input type="radio" id="sell" name="transactionType" value="sell" class="mr-2">
+                    <label for="sell">卖出</label>
+                </div>
+
+                <label for="amount">数量：</label>
+                <input type="number" id="amount" name="amount" min="0.01" step="0.01" required>
+
+                <input type="hidden" name="investmentId" value="${requestScope.investment.investmentId}">
+                <input type="submit" value="提交" class="mt-4">
+            </form>
+        </c:if>
+    </div>
+</main>
+<footer class="mt-8 w-full">
+    <div class="text-center text-gray-600 py-4 bg-white shadow">
+        &copy; 2024 InvestTrackPro. 保留所有权利.
+    </div>
+</footer>
 </body>
 </html>
-<jsp:include page="footer.jsp"/>

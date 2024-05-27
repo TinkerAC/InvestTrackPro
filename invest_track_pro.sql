@@ -11,7 +11,7 @@
  Target Server Version : 80036
  File Encoding         : 65001
 
- Date: 26/05/2024 23:17:10
+ Date: 27/05/2024 13:04:00
 */
 
 SET NAMES utf8mb4;
@@ -40,9 +40,10 @@ CREATE TABLE `asset`  (
 -- ----------------------------
 -- Records of asset
 -- ----------------------------
-INSERT INTO `asset` VALUES (9, 2, 118, 12.6, '2024-05-26 16:02:21', '2024-05-26 16:02:21', -42.19121865552984, 0);
-INSERT INTO `asset` VALUES (10, 2, 132, 2.67, '2024-05-26 16:02:21', '2024-05-26 16:02:21', -5.828420477568443, 0);
-INSERT INTO `asset` VALUES (11, 2, 139, 3.14, '2024-05-26 16:02:21', '2024-05-26 16:02:21', 6.775437672006433, 0);
+INSERT INTO `asset` VALUES (9, 2, 118, 111.1, '2024-05-27 13:01:40', '2024-05-27 13:01:41', -31.757753337597023, 3527.7794062756475);
+INSERT INTO `asset` VALUES (10, 2, 132, 2.67, '2024-05-27 13:01:40', '2024-05-27 13:01:41', -5.828420477568443, 0);
+INSERT INTO `asset` VALUES (11, 2, 139, 3.14, '2024-05-27 13:01:40', '2024-05-27 13:01:41', 6.775437672006433, 0);
+INSERT INTO `asset` VALUES (12, 2, 111, 110, '2024-05-27 13:01:40', '2024-05-27 13:01:41', 0, 1118.0023618971547);
 
 -- ----------------------------
 -- Table structure for investment
@@ -421,6 +422,14 @@ CREATE TABLE `investment_record`  (
 INSERT INTO `investment_record` VALUES (26, 118, 2, 12.6, 100, '买入', '进行中', '2024-05-26 00:14:34', '2024-05-26 00:14:34', 9);
 INSERT INTO `investment_record` VALUES (27, 132, 2, 2.67, 100, '买入', '进行中', '2024-05-26 00:14:42', '2024-05-26 00:14:42', 10);
 INSERT INTO `investment_record` VALUES (28, 139, 2, 3.14, 100, '买入', '进行中', '2024-05-26 00:14:49', '2024-05-26 00:14:49', 11);
+INSERT INTO `investment_record` VALUES (29, 118, 2, 12, 96.65149058289445, '卖出', '进行中', '2024-05-27 11:31:27', '2024-05-27 11:31:27', 9);
+INSERT INTO `investment_record` VALUES (30, 118, 2, 12, 96.65149058289445, '买入', '进行中', '2024-05-27 11:31:51', '2024-05-27 11:31:51', 9);
+INSERT INTO `investment_record` VALUES (31, 118, 2, 12, 96.65149058289445, '卖出', '进行中', '2024-05-27 11:34:44', '2024-05-27 11:34:44', 9);
+INSERT INTO `investment_record` VALUES (32, 111, 2, 122, 93.16686349142957, '买入', '进行中', '2024-05-27 11:38:04', '2024-05-27 11:38:04', 12);
+INSERT INTO `investment_record` VALUES (33, 111, 2, 12, 93.16686349142957, '卖出', '进行中', '2024-05-27 11:45:23', '2024-05-27 11:45:23', 12);
+INSERT INTO `investment_record` VALUES (34, 118, 2, 0.5, 96.65149058289445, '卖出', '进行中', '2024-05-27 12:09:08', '2024-05-27 12:09:08', 9);
+INSERT INTO `investment_record` VALUES (35, 118, 2, 123, 96.65149058289445, '买入', '进行中', '2024-05-27 13:01:28', '2024-05-27 13:01:28', 9);
+INSERT INTO `investment_record` VALUES (36, 118, 2, 12, 96.65149058289445, '卖出', '进行中', '2024-05-27 13:01:40', '2024-05-27 13:01:40', 9);
 
 -- ----------------------------
 -- Table structure for user
@@ -435,7 +444,7 @@ CREATE TABLE `user`  (
   `first_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '名',
   `last_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '姓',
   `address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '地址',
-  `created_at` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时的时间戳',
+  `created_at` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时的时间戳',
   `updated_at` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '上次更新时间戳',
   `role` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT 'user' COMMENT '用户身份',
   PRIMARY KEY (`user_id`) USING BTREE
@@ -445,7 +454,7 @@ CREATE TABLE `user`  (
 -- Records of user
 -- ----------------------------
 INSERT INTO `user` VALUES (1, 'super', '123456', '22222@qq.com', '15888589665', 'yy', 's', '地球', '2024-05-25 00:24:18', '2024-05-25 12:27:12', 'user');
-INSERT INTO `user` VALUES (2, '230551049110007', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', '2058666094@qq.com', NULL, NULL, NULL, NULL, '2024-05-25 00:24:16', '2024-05-25 12:27:12', 'user');
+INSERT INTO `user` VALUES (2, '小马丁真', '9b56ca8566a48b98a8c29a7fd307038ed555123439a937eb85d9c45166881e6e', '2058666094@qq.com', '18758834142', 'AC', 'Tinker', '地球村', '2024-05-27 12:53:45', '2024-05-27 13:02:17', 'user');
 INSERT INTO `user` VALUES (3, 'super', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'fuazying@gmail.com', NULL, NULL, NULL, NULL, '2024-05-25 00:24:14', '2024-05-25 12:27:12', 'user');
 INSERT INTO `user` VALUES (4, 'super', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'cpy@qq.com', NULL, NULL, NULL, NULL, '2024-05-25 00:24:12', '2024-05-25 12:27:12', 'user');
 INSERT INTO `user` VALUES (5, 'super', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'cp2y@qq.com', NULL, NULL, NULL, NULL, '2024-05-25 00:24:10', '2024-05-25 12:27:12', 'user');

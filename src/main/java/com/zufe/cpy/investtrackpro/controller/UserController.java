@@ -47,9 +47,22 @@ public class UserController extends HttpServlet {
             case "/login_dev":
                 loginUserDev(request, response, "2058666094@qq.com", "123456");
                 break;
+            case "/edit":
+                showEditProfilePage(request, response);
+                break;
             default:
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
                 break;
+        }
+    }
+
+    private void showEditProfilePage(HttpServletRequest request, HttpServletResponse response) {
+        User user = (User) request.getSession().getAttribute("user");
+        request.setAttribute("user", user);
+        try {
+            request.getRequestDispatcher("/WEB-INF/views/editProfile.jsp").forward(request, response);
+        } catch (ServletException | IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -67,9 +80,40 @@ public class UserController extends HttpServlet {
             case "/login":
                 loginUser(request, response);
                 break;
+            case "/edit":
+                editProfile(request, response);
+                break;
             default:
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
                 break;
+        }
+    }
+
+    private void editProfile(HttpServletRequest request, HttpServletResponse response) {
+        User user = (User) request.getSession().getAttribute("user");
+        String username = request.getParameter("username");
+        String email = request.getParameter("email");
+        String password = SecurityUtil.hashPassword(request.getParameter("password"));
+        String address = request.getParameter("address");
+        String phone = request.getParameter("phone");
+        String firstName = request.getParameter("firstName");
+        String lastName = request.getParameter("lastName");
+
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setAddress(address);
+        user.setPhone(phone);
+
+
+        userService.updateUser(user);
+
+        try {
+            response.sendRedirect(request.getContextPath() + "/user/profile");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

@@ -1,5 +1,3 @@
-
-
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -12,7 +10,6 @@
     <title>我的资产</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="css/styles.css" rel="stylesheet">
-
 </head>
 <body class="bg-gray-50 text-gray-800 p-6">
 <header class="mb-8">
@@ -53,7 +50,6 @@
                             查看详情
                         </button>
                     </td>
-
                 </tr>
             </c:forEach>
             </tbody>
@@ -66,6 +62,10 @@
     </div>
 </main>
 
-<jsp:include page="footer.jsp"/>
+<footer class="mt-8">
+    <div class="text-center text-gray-600">
+        &copy; 2024 InvestTrackPro. 保留所有权利.
+    </div>
+</footer>
 </body>
 </html>

@@ -43,7 +43,9 @@ public class UserService {
         return null;
     }
 
-
+    public void updateUser(User user) {
+        userDao.update(user);
+    }
 
 
     // 其他用户相关的业务逻辑方法...

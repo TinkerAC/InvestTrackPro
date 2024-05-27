@@ -1,5 +1,6 @@
 package com.zufe.cpy.investtrackpro.controller;
 
+import com.zufe.cpy.investtrackpro.dao.AssetDao;
 import com.zufe.cpy.investtrackpro.model.*;
 import com.zufe.cpy.investtrackpro.service.AssetService;
 import com.zufe.cpy.investtrackpro.service.InvestmentService;
@@ -87,7 +88,11 @@ public class AssetController extends HttpServlet {
         User user = (User) request.getSession().getAttribute("user");
         List<Asset> assets = assetService.getAssetsByUserId(user.getUserId());
 
+        assetService.updateAsset(user.getUserId());
+
+
         //生成投资id到投资对象的映射
+
         Map<Integer, Investment> investmentMap = new java.util.HashMap<>(Map.of());
         for (Asset asset : assets) {
             Investment investment = investmentService.getInvestmentById(asset.getInvestmentId());
@@ -132,14 +137,19 @@ public class AssetController extends HttpServlet {
 
     private void showInvestmentTradePage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // 将url中的investmentId参数传到request中,转发到交易页面
-
+        User user = (User) request.getSession().getAttribute("user");
         int investmentId = Integer.parseInt(request.getParameter("investmentId"));
         Investment investment = investmentService.getInvestmentById(investmentId);
+        Asset asset = assetService.getAsset(user.getUserId(), investmentId);
+        if (asset != null) {
+            request.setAttribute("asset", asset);
+        }
+
         request.setAttribute("investment", investment);
         request.getRequestDispatcher("/WEB-INF/views/tradePage.jsp").forward(request, response);
     }
 
-    private void addBoughtInvestmentRecord(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void addBoughtInvestmentRecord(HttpServletRequest request, HttpServletResponse response) {
 
         User user = (User) request.getSession().getAttribute("user");
         int investmentId = Integer.parseInt(request.getParameter("investmentId"));
@@ -163,7 +173,12 @@ public class AssetController extends HttpServlet {
         //调用服务层添加投资记录
         if (assetId == -1) {
             request.setAttribute("message", "买入失败");
-            request.getRequestDispatcher("/WEB-INF/views/tradePage.jsp").forward(request, response);
+            try {
+                request.getRequestDispatcher("/WEB-INF/views/tradePage.jsp").forward(request, response);
+
+            } catch (Exception e) {
+                logger.error("Error in addBoughtInvestmentRecord", e);
+            }
             return;
         }
 
@@ -175,7 +190,14 @@ public class AssetController extends HttpServlet {
         } else {
             request.setAttribute("message", "买入成功");
         }
-        request.getRequestDispatcher("/WEB-INF/views/tradePage.jsp").forward(request, response);
+
+        assetService.updateAsset(user.getUserId());
+        try {
+            request.getRequestDispatcher("/WEB-INF/views/tradePage.jsp").forward(request, response);
+        } catch (Exception e) {
+            logger.error("Error in addBoughtInvestmentRecord", e);
+        }
+
 
     }
 
@@ -184,23 +206,50 @@ public class AssetController extends HttpServlet {
         int investmentId = Integer.parseInt(request.getParameter("investmentId"));
         int assetId = assetService.getAssetId(user.getUserId(), investmentId);
 
+        boolean isAssetExist = assetService.isAssetExist(user.getUserId(), investmentId);
+        if (!isAssetExist) {
+            request.setAttribute("message", "卖出失败，没有持有该资产");
+            try {
+                request.getRequestDispatcher("/WEB-INF/views/tradePage.jsp").forward(request, response);
+            } catch (Exception e) {
+                logger.error("Error in addSoldInvestmentRecord", e);
+            }
+            return;
+        }
+
         //用户持有该资产的数量
         Double holdingAmount = assetService.getAssetAmount(user.getUserId(), investmentId);
         Investment investment = investmentService.getInvestmentById(investmentId);
+        Double amount = Double.parseDouble(request.getParameter("amount"));
 
-        request.setAttribute("holdingAmount", holdingAmount);
-        request.setAttribute("investment", investment);
+        if (holdingAmount < amount) {
+
+            request.setAttribute("message", "卖出失败，持有量不足");
+            try {
+                request.getRequestDispatcher("/WEB-INF/views/tradePage.jsp").forward(request, response);
+            } catch (Exception e) {
+                logger.error("Error in addSoldInvestmentRecord", e);
+            }
+            return;
+        }
 
 
-        boolean isSuccess = assetService.addSoldInvestmentRecord(request, assetId);
+        boolean isSuccess = assetService.addSoldInvestmentRecord(user.getUserId(), investmentId, assetId, amount);
 
         if (!isSuccess) {
             request.setAttribute("message", "卖出失败");
         } else {
             request.setAttribute("message", "卖出成功");
         }
+        assetService.updateAsset(user.getUserId());
 
 
+        try {
+            request.getRequestDispatcher("/WEB-INF/views/tradePage.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            logger.error("Error in addSoldInvestmentRecord", e);
+        }
     }
 
     private void removeInvestment(HttpServletRequest request, HttpServletResponse response) {

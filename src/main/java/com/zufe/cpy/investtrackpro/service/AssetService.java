@@ -45,7 +45,7 @@ public class AssetService {
         investmentRecord.setAssetId(assetId);
 
 
-        if (!userDao.isExist(user.getUserId())) {
+        if (!userDao.isExist(userId)) {
             logger.error("User ID does not exist: " + investmentRecord.getUserId());
 
         }
@@ -55,11 +55,24 @@ public class AssetService {
 
     }
 
-    public boolean addSoldInvestmentRecord(HttpServletRequest request, int assetId) {
-        User user = (User) request.getSession().getAttribute("user");
-        int investmentId = Integer.parseInt(request.getParameter("investmentId"));
-        Double currentPrize = investmentDao.findById(investmentId).getCurrentValue();
+    public boolean addSoldInvestmentRecord(int userId, int investmentId, int assetId, double amount) {
 
+        Double currentPrize = investmentDao.findById(investmentId).getCurrentValue();
+        InvestmentRecord investmentRecord = new InvestmentRecord();
+        investmentRecord.setInvestmentId(investmentId);
+        investmentRecord.setUserId(userId);
+        investmentRecord.setAmount(amount);
+        investmentRecord.setCurrentPrize(currentPrize);
+        investmentRecord.setStatus("进行中");
+        investmentRecord.setOperation("卖出");
+        investmentRecord.setAssetId(assetId);
+
+        if (!userDao.isExist(userId)) {
+            logger.error("User ID does not exist: " + investmentRecord.getUserId());
+        }
+
+        boolean success = investmentRecordDao.insertInvestmentRecord(investmentRecord);
+        return success;
     }
 
     //返回资产id
@@ -136,5 +149,13 @@ public class AssetService {
     //根据用户id返回交易记录
     public List<InvestmentRecord> getInvestmentRecordsByUserId(int userId) {
         return investmentRecordDao.findByUserId(userId);
+    }
+
+    public Double getAssetAmount(int userId, int investmentId) {
+        return assetDao.getAssetAmount(userId, investmentId);
+    }
+
+    public Asset getAsset(int userId, int investmentId) {
+        return assetDao.find(userId, investmentId);
     }
 }

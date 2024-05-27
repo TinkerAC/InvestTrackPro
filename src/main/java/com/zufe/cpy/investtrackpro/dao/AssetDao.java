@@ -5,10 +5,7 @@ import com.zufe.cpy.investtrackpro.util.DataBaseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Timestamp;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -159,5 +156,56 @@ public class AssetDao {
         } finally {
             DataBaseUtil.closeJDBC(conn, pstmt, null);
         }
+    }
+
+    //从用户id和投资id获取资产数量
+    public Double getAssetAmount(int userId, int investmentId) {
+        Connection conn = DataBaseUtil.getConnection();
+        String sql = "SELECT amount FROM asset WHERE user_id=? AND investment_id=?";
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, investmentId);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble("amount");
+            }
+        } catch (Exception e) {
+            logger.error("Error getting asset amount", e);
+        } finally {
+            DataBaseUtil.closeJDBC(conn, pstmt, rs);
+        }
+        return null;
+    }
+
+    public Asset find(int userId, int investmentId) {
+        Connection conn = DataBaseUtil.getConnection();
+        String sql = "SELECT * FROM asset WHERE user_id=? AND investment_id=?";
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, investmentId);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return new Asset(
+                        rs.getInt("asset_id"),
+                        rs.getInt("user_id"),
+                        rs.getInt("investment_id"),
+                        rs.getDouble("amount"),
+                        rs.getTimestamp("created_at"),
+                        rs.getDouble("holding_profit"),
+                        rs.getDouble("total_sell_revenue")
+                );
+            }
+        } catch (SQLException e) {
+            logger.error("Error finding asset", e);
+        } finally {
+            DataBaseUtil.closeJDBC(conn, pstmt, rs);
+        }
+        return null;
     }
 }
