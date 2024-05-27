@@ -1,6 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,32 +18,35 @@
             margin: 0;
             padding: 0;
         }
+
+        .positive-change {
+            color: red;
+        }
+
+        .negative-change {
+            color: green;
+        }
     </style>
 
     <script>
+
+        //前端搜索
         $(document).ready(function () {
-            // 当搜索表单提交时
-            $('form').on('submit', function (event) {
-                event.preventDefault(); // 阻止表单的常规提交
+            $('#searchButton').on('click', function (event) {
+                event.preventDefault(); // 阻止表单提交
 
-                // 获取表单数据
-                var formData = $(this).serialize(); // 将表单数据序列化
+                var category = $('#category').val().toLowerCase();
+                var riskLevel = $('#riskLevel').val().toLowerCase();
 
-                // 执行 AJAX 请求
-                $.ajax({
-                    url: 'investment/search',
-                    type: 'GET',
-                    cache: false,  // 禁用 AJAX 请求的缓存
-                    data: formData,
-                    success: function (response) {
-                        $('table').html(response);
-                    },
-                    error: function () {
-                        alert('搜索失败，请重试。');
-                    }
+                $('#investmentTable tbody tr').each(function () {
+                    var matchesCategory = !category || $(this).find('td:eq(1)').text().toLowerCase().includes(category);
+                    var matchesRiskLevel = !riskLevel || $(this).find('td:eq(2)').text().toLowerCase().includes(riskLevel);
+
+                    $(this).toggle(matchesCategory && matchesRiskLevel);
                 });
             });
         });
+
     </script>
 </head>
 <body class="bg-blue-100">
@@ -51,7 +54,6 @@
     <div class="bg-white p-10 rounded-lg shadow-xl w-full max-w-2xl">
         <h1 class="text-2xl font-semibold text-center text-gray-700 mb-6">投资列表</h1>
         <div>
-            <!-- 一个搜索选项表单 -->
             <form action="investment/search" method="GET" class="mb-6">
                 <div class="mb-4">
                     <label for="category" class="block text-gray-700 text-sm font-semibold mb-2">类型:</label>
@@ -79,7 +81,8 @@
                     </select>
                 </div>
 
-                <button type="submit"
+                <button id="searchButton"
+                        type="submit"
                         class="w-full bg-indigo-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
                     搜索
                 </button>
@@ -87,31 +90,50 @@
         </div>
         <!-- 如果有投资信息，则显示表格 -->
         <c:if test="${not empty investments}">
-            <table class="w-full border-collapse border border-gray-300">
+            <table id="investmentTable" class="w-full border-collapse border border-gray-300">
                 <thead>
                 <tr class="bg-gray-100">
                     <th class="border border-gray-300 px-4 py-2">投资ID</th>
                     <th class="border border-gray-300 px-4 py-2">投资名称</th>
-                    <th class="border border-gray-300 px-4 py-2">初始市值</th>
                     <th class="border border-gray-300 px-4 py-2">当前市值</th>
+                    <th class="border border-gray-300 px-4 py-2">涨跌</th>
                     <th class="border border-gray-300 px-4 py-2">操作</th>
                 </tr>
                 </thead>
                 <tbody>
                 <c:forEach var="investment" items="${investments}">
+                    <c:set var="changePercent"
+                           value="${requestScope.investmentDailyChangeMap.get(investment.investmentId).changePercent}"/>
+                    <c:set var="changeColor" value="${changePercent > 0 ? 'red' : 'green'}"/>
                     <tr>
                         <td class="border border-gray-300 px-4 py-2">${investment.investmentId}</td>
                         <td class="border border-gray-300 px-4 py-2">${investment.name}</td>
-                        <td class="border border-gray-300 px-4 py-2">${investment.initialValue}</td>
-                        <td class="border border-gray-300 px-4 py-2">${investment.currentValue}</td>
-                        <td class="border border-gray-300 px-4 py-2"><a
-                                href='investment/details?id=${investment.investmentId}'
-                                class="text-indigo-600 hover:underline">查看详情</a></td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <fmt:formatNumber value="${investment.currentValue}" type="number" minFractionDigits="2"
+                                              maxFractionDigits="2"/>
+                        </td>
+                        <c:if test="${changePercent > 0}">
+                            <td class="border border-gray-300 px-4 py-2" style="color: red">
+                                +<fmt:formatNumber value="${changePercent}" type="number" minFractionDigits="2"
+                                                   maxFractionDigits="2"/>%
+                            </td>
+                        </c:if>
+                        <c:if test="${changePercent < 0}">
+                            <td class="border border-gray-300 px-4 py-2" style="color: green">
+                                <fmt:formatNumber value="${changePercent}" type="number" minFractionDigits="2"
+                                                  maxFractionDigits="2"/>%
+                            </td>
+                        </c:if>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <a href='investment/details?id=${investment.investmentId}'
+                               class="text-indigo-600 hover:underline">查看详情</a>
+                        </td>
                     </tr>
                 </c:forEach>
                 </tbody>
             </table>
         </c:if>
+
 
         <!-- 如果没有投资信息，显示提示消息 -->
         <c:if test="${empty investments}">
@@ -119,6 +141,7 @@
         </c:if>
     </div>
 </div>
-</body>
+
 <jsp:include page="footer.jsp"/>
+</body>
 </html>

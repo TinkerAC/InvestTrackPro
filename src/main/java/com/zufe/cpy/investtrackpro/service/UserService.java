@@ -47,6 +47,10 @@ public class UserService {
         userDao.update(user);
     }
 
+    public boolean isUserExist(String email) {
+        return userDao.findByEmail(email) != null;
+    }
+
 
     // 其他用户相关的业务逻辑方法...
 }

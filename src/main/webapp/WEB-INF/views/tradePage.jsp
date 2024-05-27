@@ -84,6 +84,19 @@
                 form.action = '${pageContext.request.contextPath}/asset/sell';
             }
         }
+
+        function validateForm() {
+            var amount = document.getElementById('amount').value;
+            if (amount <= 0) {
+                alert('请输入有效的数量');
+                return false;
+            }
+            if (document.getElementById('sell').checked && amount > ${requestScope.asset.amount}) {
+                alert('卖出数量不能大于持有数量');
+                return false;
+            }
+            return true;
+        }
     </script>
 </head>
 <body class="bg-gray-50">
@@ -91,12 +104,17 @@
     <nav class="bg-white shadow p-6 rounded-lg flex justify-between items-center w-full max-w-6xl mx-auto">
         <h1 class="text-2xl font-bold text-gray-700">我的资产管理</h1>
         <div>
-            <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-                    onclick="window.location.href='userHome'">用户主页
-            </button>
-            <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 ml-4"
-                    onclick="window.location.href='logout'">登出
-            </button>
+            <!-- Personal Home Page Link -->
+            <a href="<%=request.getContextPath()%>/user/profile"
+               class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+                个人主页
+            </a>
+
+            <!-- Logout Link -->
+            <a href="<%=request.getContextPath()%>/user/logout"
+               class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 ml-4">
+                登出
+            </a>
         </div>
     </nav>
 </header>

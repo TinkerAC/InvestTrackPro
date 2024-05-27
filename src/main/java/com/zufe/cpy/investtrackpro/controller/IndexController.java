@@ -34,7 +34,7 @@ public class IndexController extends HttpServlet {
                 break;
             case "/logout":
                 request.getSession().invalidate();
-                response.sendRedirect(request.getContextPath() + "/");
+                response.sendRedirect(request.getContextPath());
                 break;
             default:
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);

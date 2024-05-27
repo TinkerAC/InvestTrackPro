@@ -1,20 +1,50 @@
 package com.zufe.cpy.investtrackpro.controller;
 
+import com.google.gson.Gson;
 import com.zufe.cpy.investtrackpro.model.User;
 import com.zufe.cpy.investtrackpro.service.UserService;
 import com.zufe.cpy.investtrackpro.util.SecurityUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+
+import static com.zufe.cpy.investtrackpro.util.SecurityUtil.isInvalid;
 
 
 @WebServlet("/user/*")
 public class UserController extends HttpServlet {
+    private static class ResponseMessage {
+        private String status;
+        private String message;
+
+        public ResponseMessage(String status, String message) {
+            this.status = status;
+            this.message = message;
+        }
+
+        // Getters and Setters
+        public String getStatus() {
+            return status;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+    }
+
+    private static final String EMAIL_COOKIE = "email";
+    private static final String PASSWORD_COOKIE = "password";
 
     private UserService userService;
 
@@ -26,10 +56,7 @@ public class UserController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getPathInfo();
-        if (action == null) {
-            action = "/";
-        }
+        String action = request.getPathInfo() != null ? request.getPathInfo() : "/";
 
         switch (action) {
             case "/register":
@@ -56,22 +83,15 @@ public class UserController extends HttpServlet {
         }
     }
 
-    private void showEditProfilePage(HttpServletRequest request, HttpServletResponse response) {
+    private void showEditProfilePage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("user");
         request.setAttribute("user", user);
-        try {
-            request.getRequestDispatcher("/WEB-INF/views/editProfile.jsp").forward(request, response);
-        } catch (ServletException | IOException e) {
-            e.printStackTrace();
-        }
+        request.getRequestDispatcher("/WEB-INF/views/editProfile.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getPathInfo();
-        if (action == null) {
-            action = "/";
-        }
+        String action = request.getPathInfo() != null ? request.getPathInfo() : "/";
 
         switch (action) {
             case "/register":
@@ -79,6 +99,9 @@ public class UserController extends HttpServlet {
                 break;
             case "/login":
                 loginUser(request, response);
+                break;
+            case "/register_ajax":
+                registerUserAjax(request, response);
                 break;
             case "/edit":
                 editProfile(request, response);
@@ -89,32 +112,21 @@ public class UserController extends HttpServlet {
         }
     }
 
-    private void editProfile(HttpServletRequest request, HttpServletResponse response) {
+    private void editProfile(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User user = (User) request.getSession().getAttribute("user");
-        String username = request.getParameter("username");
-        String email = request.getParameter("email");
-        String password = SecurityUtil.hashPassword(request.getParameter("password"));
-        String address = request.getParameter("address");
-        String phone = request.getParameter("phone");
-        String firstName = request.getParameter("firstName");
-        String lastName = request.getParameter("lastName");
-
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setPassword(password);
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setAddress(address);
-        user.setPhone(phone);
-
-
+        updateUserFromRequest(user, request);
         userService.updateUser(user);
+        response.sendRedirect(request.getContextPath() + "/user/profile");
+    }
 
-        try {
-            response.sendRedirect(request.getContextPath() + "/user/profile");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void updateUserFromRequest(User user, HttpServletRequest request) {
+        user.setUsername(request.getParameter("username"));
+        user.setEmail(request.getParameter("email"));
+        user.setPassword(SecurityUtil.hashPassword(request.getParameter("password")));
+        user.setFirstName(request.getParameter("firstName"));
+        user.setLastName(request.getParameter("lastName"));
+        user.setAddress(request.getParameter("address"));
+        user.setPhone(request.getParameter("phone"));
     }
 
     private void showRegistrationForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -122,6 +134,17 @@ public class UserController extends HttpServlet {
     }
 
     private void showLoginForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (EMAIL_COOKIE.equals(cookie.getName())) {
+                    request.setAttribute("email", cookie.getValue());
+                }
+                if (PASSWORD_COOKIE.equals(cookie.getName())) {
+                    request.setAttribute("password", cookie.getValue());
+                }
+            }
+        }
         request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
     }
 
@@ -139,23 +162,15 @@ public class UserController extends HttpServlet {
         String password = request.getParameter("password");
         String email = request.getParameter("email");
 
-        if (username == null || password == null || email == null || username.isEmpty() || password.isEmpty() || email.isEmpty()) {
+        if (isInvalid(username) || isInvalid(password) || isInvalid(email)) {
             request.setAttribute("error", "所有字段都是必填的哦!");
             showRegistrationForm(request, response);
             return;
         }
 
-        //新建用户对象
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(SecurityUtil.hashPassword(password));
-        user.setRole("user");
-        user.setEmail(email);
-
-        //调用服务层方法注册用户
+        User user = createUserFromRequest(username, password, email);
         int userId = userService.registerUser(user);
 
-        //如果用户不存在，注册成功,重定向到登录页面
         if (userId != -1) {
             response.sendRedirect(request.getContextPath() + "/user/login");
         } else {
@@ -164,39 +179,62 @@ public class UserController extends HttpServlet {
         }
     }
 
+
+
+    private User createUserFromRequest(String username, String password, String email) {
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(SecurityUtil.hashPassword(password));
+        user.setRole("user");
+        user.setEmail(email);
+        return user;
+    }
+
     private void loginUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        if (email == null || password == null || email.isEmpty() || password.isEmpty()) {
+        if (isInvalid(email) || isInvalid(password)) {
             request.setAttribute("error", "邮箱或密码不能为空!");
             showLoginForm(request, response);
             return;
+        }
+        boolean isUserExist = userService.isUserExist(email);
+        if (!isUserExist) {
+            request.setAttribute("error", "您还没有注册，请先注册！");
+            showLoginForm(request, response);
         }
 
         User user = userService.loginUser(email, password);
 
 
-        if (user != null) {
-            String role = user.getRole();
-            if (role.equals("admin")) {
-                HttpSession session = request.getSession();
-                session.setAttribute("user", user);
-                response.sendRedirect(request.getContextPath() + "/admin");
-            } else {
-                HttpSession session = request.getSession();
-                session.setAttribute("user", user);
+        if (user != null) {//如果用户存在，登录成功
+            HttpSession session = request.getSession();
+            session.setAttribute("user", user);
+
+
+            if ("admin".equals(user.getRole())) {//如果是管理员，跳转到管理员页面
+                request.getRequestDispatcher("/WEB-INF/views/admin/admin.jsp").forward(request, response);
+
+            } else { //如果是用户，跳转到用户页面
+                if (request.getSession().getAttribute("originalUrl") != null) {//如果有原始请求，跳转到原始请求
+                    response.sendRedirect(request.getSession().getAttribute("originalUrl").toString());
+
+                } else {//如果没有原始请求，跳转到用户页面
                 response.sendRedirect(request.getContextPath() + "/user/profile");
+                }
             }
-        } else {
+
+
+        } else {//如果用户不存在，登录失败
             request.setAttribute("error", "邮箱或密码错误!");
             showLoginForm(request, response);
         }
     }
 
-    private void loginUserDev(HttpServletRequest request, HttpServletResponse response, String email, String password) throws ServletException, IOException {
 
-        if (email == null || password == null || email.isEmpty() || password.isEmpty()) {
+    private void loginUserDev(HttpServletRequest request, HttpServletResponse response, String email, String password) throws ServletException, IOException {
+        if (isInvalid(email) || isInvalid(password)) {
             request.setAttribute("error", "邮箱或密码不能为空!");
             showLoginForm(request, response);
             return;
@@ -204,7 +242,6 @@ public class UserController extends HttpServlet {
 
         User user = userService.loginUser(email, password);
 
-        //如果用户存在，登录成功,重定向到来源页面
         if (user != null) {
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
@@ -214,4 +251,40 @@ public class UserController extends HttpServlet {
             showLoginForm(request, response);
         }
     }
+
+
+    private void registerUserAjax(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        String email = request.getParameter("email");
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        PrintWriter out = response.getWriter();
+        Gson gson = new Gson();
+
+        if (isInvalid(username) || isInvalid(password) || isInvalid(email)) {
+            ResponseMessage errorMessage = new ResponseMessage("error", "所有字段都是必填的哦!");
+            out.print(gson.toJson(errorMessage));
+            out.flush();
+            return;
+        }
+
+        User user = createUserFromRequest(username, password, email);
+        int userId = userService.registerUser(user);
+
+        if (userId != -1) {
+            ResponseMessage successMessage = new ResponseMessage("success", "用户已成功注册");
+            out.print(gson.toJson(successMessage));
+        } else {
+            ResponseMessage errorMessage = new ResponseMessage("error", "该邮箱已被注册.");
+            out.print(gson.toJson(errorMessage));
+        }
+
+        out.flush();
+    }
 }
+
+
+

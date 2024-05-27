@@ -9,7 +9,7 @@ public class InvestmentRecord {
     private Double amount;
     private Double currentPrize;//交易发生时的价格
     private String operation;//"买入"、"卖出"
-    private String status;
+    private String status;//"买入":持有中,已卖出; "卖出":"无"
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private int assetId;

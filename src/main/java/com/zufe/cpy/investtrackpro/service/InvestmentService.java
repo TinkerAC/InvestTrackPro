@@ -48,4 +48,7 @@ public class InvestmentService {
     public List<InvestmentDailyChange> getInvestmentDailyChanges(int investmentId) {
         return investmentDailyChangeDao.findByInvestmentId(investmentId);
     }
+    public List<InvestmentDailyChange> getInvestmentDailyChanges(List<Integer> investmentIds) {
+        return investmentDailyChangeDao.findLatestByInvestmentId(investmentIds);
+    }
 }

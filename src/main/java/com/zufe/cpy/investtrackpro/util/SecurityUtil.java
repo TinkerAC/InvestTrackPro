@@ -52,6 +52,11 @@ public class SecurityUtil {
         return matcher.matches();
     }
 
+
+    public static boolean  isInvalid(String value) {
+        return value == null || value.isEmpty();
+    }
+
 }
 
 

@@ -52,7 +52,7 @@ public class AdminController extends HttpServlet {
             case "/resetSystem"://重置系统
                 resetSystem(request, response);
                 break;
-            case "logout":
+            case "/logout":
                 request.getSession().invalidate();
                 response.sendRedirect(request.getContextPath() + "/");
                 break;
@@ -71,6 +71,8 @@ public class AdminController extends HttpServlet {
 
     private void madeInHaven(HttpServletRequest request, HttpServletResponse response) {
         adminService.madeInHaven();
+        request.setAttribute("message", "模拟时间流逝成功!");
+        showAdminIndexPage(request, response);
     }
 
     private void showInvestmentRecordList(HttpServletRequest request, HttpServletResponse response) {

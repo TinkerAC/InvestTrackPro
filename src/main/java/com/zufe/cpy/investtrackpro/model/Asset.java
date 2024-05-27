@@ -28,10 +28,6 @@ public class Asset {
         return assetId;
     }
 
-    public void setAssetId(int assetId) {
-        this.assetId = assetId;
-    }
-
     public int getUserId() {
         return userId;
     }

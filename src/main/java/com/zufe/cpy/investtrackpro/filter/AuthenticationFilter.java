@@ -40,7 +40,15 @@ public class AuthenticationFilter implements Filter {
                 chain.doFilter(request, response);
             }
         } else {
-            // 如果用户未登录，重定向到登录页面
+            // 如果用户未登录，存储原始请求URL
+            String originalUrl = httpRequest.getRequestURI();
+            if (httpRequest.getQueryString() != null) {
+                originalUrl += "?" + httpRequest.getQueryString();
+            }
+            session = httpRequest.getSession(true);
+            session.setAttribute("originalUrl", originalUrl);
+
+            // 重定向到登录页面
             httpResponse.sendRedirect(httpRequest.getContextPath() + "/user/login");
         }
     }
@@ -50,3 +58,4 @@ public class AuthenticationFilter implements Filter {
         // Filter destruction code if needed
     }
 }
+

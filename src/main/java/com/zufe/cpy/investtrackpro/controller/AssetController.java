@@ -86,10 +86,8 @@ public class AssetController extends HttpServlet {
     private void viewAsset(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         User user = (User) request.getSession().getAttribute("user");
-        List<Asset> assets = assetService.getAssetsByUserId(user.getUserId());
-
         assetService.updateAsset(user.getUserId());
-
+        List<Asset> assets = assetService.getAssetsByUserId(user.getUserId());
 
         //生成投资id到投资对象的映射
 

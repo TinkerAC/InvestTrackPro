@@ -33,13 +33,13 @@
     <nav class="container mx-auto flex justify-between items-center">
         <h1 class="text-2xl font-semibold text-gray-700">InvestTrackPro</h1>
         <div>
-            <button onclick="window.location.href='${pageContext.request.contextPath}/userHome'"
+            <button onclick="window.location.href='${pageContext.request.contextPath}/user/profile'"
                     class="bg-blue-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
                 用户主页
             </button>
-            <button onclick="window.location.href='${pageContext.request.contextPath}/logout'"
+            <button onclick="window.location.href='${pageContext.request.contextPath}/user/logout'"
                     class="bg-blue-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 ml-4">
-                登出
+                注销
             </button>
         </div>
     </nav>

@@ -14,10 +14,20 @@
 <body class="bg-gray-50 text-gray-800 p-6">
 <header class="mb-8">
     <nav class="bg-white shadow p-4 rounded-lg flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-gray-700">我的资产管理</h1>
+        <h1 class="text-2xl font-bold text-gray-700">资产管理</h1>
         <div>
-            <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600" onclick="window.location.href='userHome'">用户主页</button>
-            <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 ml-4" onclick="window.location.href='logout'">登出</button>
+            <!-- Personal Home Page Link -->
+            <a href="<%=request.getContextPath()%>/user/profile"
+               class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+                个人主页
+            </a>
+
+            <!-- Logout Link -->
+            <a href="<%=request.getContextPath()%>/user/logout"
+               class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 ml-4">
+                登出
+            </a>
+
         </div>
     </nav>
 </header>

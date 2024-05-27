@@ -1,6 +1,4 @@
-<%@ page import="com.zufe.cpy.investtrackpro.model.InvestmentRecord" %>
-<%@ page import="java.util.List" %>
-<%@ page import="com.zufe.cpy.investtrackpro.model.Investment" %>
+
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -145,7 +143,7 @@
     <c:set var="totalAsset" value="${0}" scope="page"/>
     <p class="total-asset">
         用户总资产:
-        <c:forEach var="investmentRecord" items="${investmentRecords}">
+        <c:forEach var="investmentRecord" items="${requestScope.investmentRecords}">
             <c:choose>
                 <c:when test="${investmentRecord.operation == '买入'}">
                     <c:set var="totalAsset"
@@ -159,9 +157,27 @@
                 </c:when>
             </c:choose>
         </c:forEach>
-        ${totalAsset}元
+        <fmt:formatNumber value="${totalAsset}" type="number" maxFractionDigits="2"/>元
     </p>
-
+    <p class="totalHoldingProfit">
+        总持有收益:
+        <c:set var="totalHoldingProfit" value="${0}" scope="page"/>
+        <c:forEach var="asset" items="${assets}">
+            <c:set var="totalAsset"
+                   value="${totalAsset + asset.holdingProfit}"
+                   scope="page"/>
+        </c:forEach>
+        <fmt:formatNumber value="${totalHoldingProfit}" type="number" maxFractionDigits="2"/>元
+    </p>
+    <p class="totalSellRevenue">
+        总实现收益:
+        <c:set var="sellRevenue" value="${0}" scope="page"/>
+        <c:forEach var="asset" items="${requestScope.assets}">
+            <c:set var="sellRevenue"
+                   value="${sellRevenue + asset.totalSellRevenue}"
+                   scope="page"/>
+        </c:forEach>
+        <fmt:formatNumber value="${sellRevenue}" type="number" maxFractionDigits="2"/>元
 </div>
 </body>
 </html>

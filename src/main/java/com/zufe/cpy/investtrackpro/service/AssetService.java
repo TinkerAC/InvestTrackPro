@@ -6,12 +6,13 @@ import com.zufe.cpy.investtrackpro.dao.InvestmentRecordDao;
 import com.zufe.cpy.investtrackpro.dao.UserDao;
 import com.zufe.cpy.investtrackpro.model.Asset;
 import com.zufe.cpy.investtrackpro.model.InvestmentRecord;
-import com.zufe.cpy.investtrackpro.model.User;
-import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class AssetService {
@@ -34,7 +35,6 @@ public class AssetService {
     public boolean addBoughtInvestmentRecord(int userId, int investmentId, int assetId, double amount) {
         Double currentPrize = investmentDao.findById(investmentId).getCurrentValue();
 
-
         InvestmentRecord investmentRecord = new InvestmentRecord();
         investmentRecord.setInvestmentId(investmentId);
         investmentRecord.setUserId(userId);
@@ -51,7 +51,9 @@ public class AssetService {
         }
 
         boolean success = investmentRecordDao.insertInvestmentRecord(investmentRecord);
+        updateAsset(userId);
         return success;
+
 
     }
 
@@ -72,6 +74,7 @@ public class AssetService {
         }
 
         boolean success = investmentRecordDao.insertInvestmentRecord(investmentRecord);
+        updateAsset(userId);
         return success;
     }
 
@@ -84,60 +87,35 @@ public class AssetService {
         List<Asset> assets = assetDao.findByUserId(userId);
 
         for (Asset asset : assets) {
-            List<InvestmentRecord> investmentRecords = investmentRecordDao.find(userId, asset.getInvestmentId());
+            List<InvestmentRecord> records = investmentRecordDao.find(userId, asset.getInvestmentId());
+            Double currentPrice = investmentDao.findById(asset.getInvestmentId()).getCurrentValue();
 
-            // 计算持有量
-            double amount = 0.0;
-            // 计算总买入成本
-            double totalCost = 0.0;
-            // 计算总卖出收入
-            double totalSellRevenue = 0.0;
-            for (InvestmentRecord investmentRecord : investmentRecords) {
-                if (investmentRecord.getOperation().equals("买入")) {
-                    amount += investmentRecord.getAmount();
-                    totalCost += investmentRecord.getAmount() * investmentRecord.getCurrentPrize();
-                } else if (investmentRecord.getOperation().equals("卖出")) {
-                    amount -= investmentRecord.getAmount();
-                    totalSellRevenue += investmentRecord.getAmount() * investmentRecord.getCurrentPrize();
-                    // 这里需要减去相应卖出的持有成本
-                    totalCost -= investmentRecord.getAmount() * getAverageBuyPrice(investmentRecords, investmentRecord.getAmount());
-                } else {
-                    logger.error("Unknown operation: " + investmentRecord.getOperation());
-                }
-            }
+            // 计算持有收益和卖出收益
+            Map<String, Double> profits = calculateProfits(records, currentPrice);
 
-            // 获取当前单价
-            double currentPrice = investmentDao.findById(asset.getInvestmentId()).getCurrentValue();
-            double currentMarketValue = amount * currentPrice;
-
-            // 持有收益计算
-            double holdingProfit = currentMarketValue - totalCost;
-
-            // 总收益 = 已实现收益 + 持有收益
-            double totalProfit = totalSellRevenue + holdingProfit;
+            //计算持有数量
+            double amount = calculateAmount(records);
 
             // 更新资产信息
+            asset.setHoldingProfit(profits.get("holdingProfit"));
+            asset.setTotalSellRevenue(profits.get("sellRevenue"));
             asset.setAmount(amount);
-            asset.setHoldingProfit(holdingProfit);
-            asset.setTotalSellRevenue(totalSellRevenue);
 
             assetDao.updateAsset(asset);
         }
+
     }
 
-    /**
-     * 获取卖出时的平均买入价格，用于减去相应的持有成本
-     */
-    private double getAverageBuyPrice(List<InvestmentRecord> records, double sellAmount) {
-        double buyAmount = 0.0;
-        double buyCost = 0.0;
+    private double calculateAmount(List<InvestmentRecord> records) {
+        Double amount = 0.0;
         for (InvestmentRecord record : records) {
-            if (record.getOperation().equals("买入")) {
-                buyAmount += record.getAmount();
-                buyCost += record.getAmount() * record.getCurrentPrize();
+            if ("买入".equals(record.getOperation())) {
+                amount += record.getAmount();
+            } else if ("卖出".equals(record.getOperation())) {
+                amount -= record.getAmount();
             }
         }
-        return buyCost / buyAmount;
+        return amount;
     }
 
 
@@ -157,5 +135,55 @@ public class AssetService {
 
     public Asset getAsset(int userId, int investmentId) {
         return assetDao.find(userId, investmentId);
+    }
+
+
+    public static Map<String, Double> calculateProfits(List<InvestmentRecord> records, double currentPrice) {
+        double holdingProfit = 0.0;
+        double sellRevenue = 0.0;
+        Map<Integer, List<InvestmentRecord>> purchases = new HashMap<>();
+
+        for (InvestmentRecord record : records) {
+            if ("买入".equals(record.getOperation())) {
+                purchases.putIfAbsent(record.getAssetId(), new ArrayList<>());
+                purchases.get(record.getAssetId()).add(record);
+                // 计算持有收益
+                double profit = (currentPrice - record.getCurrentPrize()) * record.getAmount();
+                holdingProfit += profit;
+            } else if ("卖出".equals(record.getOperation())) {
+                List<InvestmentRecord> purchaseList = purchases.get(record.getAssetId());
+                double amountToSell = record.getAmount();
+
+                while (amountToSell > 0 && purchaseList != null && !purchaseList.isEmpty()) {
+                    InvestmentRecord purchase = purchaseList.get(0);
+                    if (purchase.getAmount() <= amountToSell) {
+                        double profit = (record.getCurrentPrize() - purchase.getCurrentPrize()) * purchase.getAmount();
+                        sellRevenue += profit;
+                        amountToSell -= purchase.getAmount();
+                        purchaseList.remove(0);
+                    } else {
+                        double profit = (record.getCurrentPrize() - purchase.getCurrentPrize()) * amountToSell;
+                        sellRevenue += profit;
+                        purchase.setAmount(purchase.getAmount() - amountToSell);
+                        amountToSell = 0;
+                    }
+                }
+            }
+        }
+
+        Map<String, Double> result = new HashMap<>();
+        result.put("holdingProfit", holdingProfit);
+        result.put("sellRevenue", sellRevenue);
+        return result;
+    }
+
+    private static class PurchaseRecord {
+        double price;
+        double amount;
+
+        public PurchaseRecord(double price, double amount) {
+            this.price = price;
+            this.amount = amount;
+        }
     }
 }

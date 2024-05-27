@@ -1,6 +1,7 @@
 package com.zufe.cpy.investtrackpro.controller;
 
 
+import com.google.gson.Gson;
 import com.zufe.cpy.investtrackpro.model.Investment;
 import com.zufe.cpy.investtrackpro.model.InvestmentDailyChange;
 import com.zufe.cpy.investtrackpro.model.InvestmentRecord;
@@ -11,11 +12,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @WebServlet("/investment/*")
 public class InvestmentController extends HttpServlet {
@@ -63,6 +66,20 @@ public class InvestmentController extends HttpServlet {
     private void showAllInvestments(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Investment> investments = investmentService.getAllInvestments();
         request.setAttribute("investments", investments);
+
+        //从investments生成investmentIdList
+        List<Integer> investmentIdList = new ArrayList<>();
+        for (Investment investment : investments) {
+            investmentIdList.add(investment.getInvestmentId());
+        }
+        List<InvestmentDailyChange> investmentDailyChanges = investmentService.getInvestmentDailyChanges(investmentIdList);
+        Map<Integer, InvestmentDailyChange> investmentDailyChangeMap = new HashMap<>();
+
+        //生成从investmentId到investmentDailyChange的映射
+        for (InvestmentDailyChange investmentDailyChange : investmentDailyChanges) {
+            investmentDailyChangeMap.put(investmentDailyChange.getInvestmentId(), investmentDailyChange);
+        }
+        request.setAttribute("investmentDailyChangeMap", investmentDailyChangeMap);
         request.getRequestDispatcher("/WEB-INF/views/investment.jsp").forward(request, response);
     }
 

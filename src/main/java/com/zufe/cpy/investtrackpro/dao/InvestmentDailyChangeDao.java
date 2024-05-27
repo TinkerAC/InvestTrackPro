@@ -26,18 +26,20 @@ public class InvestmentDailyChangeDao {
             pstmt.setInt(1, investmentId);
             rs = pstmt.executeQuery();
             while (rs.next()) {
-                int changeId = rs.getInt("change_id");
-                Double opening_value = rs.getDouble("opening_value");
-                Double closing_value = rs.getDouble("closing_value");
-                Double high_value = rs.getDouble("high_value");
-                Double low_value = rs.getDouble("low_value");
-                Date date = rs.getDate("date");
-                Timestamp createdAt = rs.getTimestamp("created_at");
-                Double changePercent = rs.getDouble("change_percent");
-                Double volume = rs.getDouble("volume");
-                Double changeValue = rs.getDouble("change_value");
+                InvestmentDailyChange investmentDailyChange = new InvestmentDailyChange(
+                        rs.getInt("change_id"),
+                        rs.getInt("investment_id"),
+                        rs.getDouble("opening_value"),
+                        rs.getDouble("closing_value"),
+                        rs.getDouble("high_value"),
+                        rs.getDouble("low_value"),
+                        rs.getDate("date"),
+                        rs.getDouble("volume"),
+                        rs.getTimestamp("created_at"),
+                        rs.getDouble("change_percent"),
+                        rs.getDouble("change_value")
+                );
 
-                InvestmentDailyChange investmentDailyChange = new InvestmentDailyChange(changeId, investmentId, opening_value, closing_value, high_value, low_value, date, volume, createdAt, changePercent, changeValue);
                 investmentDailyChanges.add(investmentDailyChange);
             }
         } catch (Exception e) {
@@ -145,6 +147,15 @@ public class InvestmentDailyChangeDao {
         } finally {
             DataBaseUtil.closeJDBC(conn, pstmt, rs);
         }
+    }
+
+    public List<InvestmentDailyChange> findLatestByInvestmentId(List<Integer> investmentIds) {
+        List<InvestmentDailyChange> investmentDailyChanges = new ArrayList<>();
+        for (Integer investmentId : investmentIds) {
+            investmentDailyChanges.add(findLatestByInvestmentId(investmentId));
+        }
+        return investmentDailyChanges;
+
     }
 
 }

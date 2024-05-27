@@ -78,15 +78,18 @@ public class InvestmentRecordDao {
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                InvestmentRecord investmentRecord = new InvestmentRecord();
-                investmentRecord.setInvestmentRecordId(rs.getInt("investment_record_id"));
-                investmentRecord.setInvestmentId(rs.getInt("investment_id"));
-                investmentRecord.setUserId(rs.getInt("user_id"));
-                investmentRecord.setAmount(rs.getDouble("amount"));
-                investmentRecord.setCurrentPrize(rs.getDouble("current_prize"));
-                investmentRecord.setStatus(rs.getString("status"));
-                investmentRecord.setCreatedAt(rs.getTimestamp("created_at"));
-                investmentRecord.setUpdatedAt(rs.getTimestamp("updated_at"));
+                InvestmentRecord investmentRecord = new InvestmentRecord(
+                        rs.getInt("investment_record_id"),
+                        rs.getInt("investment_id"),
+                        rs.getInt("user_id"),
+                        rs.getDouble("amount"),
+                        rs.getDouble("current_prize"),
+                        rs.getString("status"),
+                        rs.getString("operation"),
+                        rs.getTimestamp("created_at"),
+                        rs.getTimestamp("updated_at"),
+                        rs.getInt("asset_id")
+                );
                 investmentRecords.add(investmentRecord);
             }
         } catch (SQLException e) {
@@ -103,22 +106,24 @@ public class InvestmentRecordDao {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, userId);
-            try (ResultSet rs = ps.executeQuery()) {
+            ResultSet rs = ps.executeQuery();
+
                 while (rs.next()) {
-                    InvestmentRecord investmentRecord = new InvestmentRecord();
-                    investmentRecord.setInvestmentRecordId(rs.getInt("investment_record_id"));
-                    investmentRecord.setInvestmentId(rs.getInt("investment_id"));
-                    investmentRecord.setUserId(userId);
-                    investmentRecord.setAmount(rs.getDouble("amount"));
-                    investmentRecord.setCurrentPrize(rs.getDouble("current_prize"));
-                    investmentRecord.setStatus(rs.getString("status"));
-                    investmentRecord.setCreatedAt(rs.getTimestamp("created_at"));
-                    investmentRecord.setUpdatedAt(rs.getTimestamp("updated_at"));
-                    investmentRecord.setAssetId(rs.getInt("asset_id"));
-                    investmentRecord.setOperation(rs.getString("operation"));
+                    InvestmentRecord investmentRecord = new InvestmentRecord(
+                            rs.getInt("investment_record_id"),
+                            rs.getInt("investment_id"),
+                            rs.getInt("user_id"),
+                            rs.getDouble("amount"),
+                            rs.getDouble("current_prize"),
+                            rs.getString("status"),
+                            rs.getString("operation"),
+                            rs.getTimestamp("created_at"),
+                            rs.getTimestamp("updated_at"),
+                            rs.getInt("asset_id")
+                    );
+
                     investmentRecords.add(investmentRecord);
                 }
-            }
         } catch (SQLException e) {
             logger.error("Error finding investment records by user ID", e);
         }
@@ -128,7 +133,7 @@ public class InvestmentRecordDao {
     // 查（按用户ID和投资ID）
     public List<InvestmentRecord> find(int userId, int investmentId) {
         List<InvestmentRecord> investmentRecords = new ArrayList<>();
-        String sql = "SELECT * FROM investment_record WHERE user_id = ? and investment_id = ?";
+        String sql = "SELECT * FROM investment_record WHERE user_id = ? and investment_id = ? order by created_at ";
         try (Connection conn = DataBaseUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -137,17 +142,18 @@ public class InvestmentRecordDao {
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    InvestmentRecord investmentRecord = new InvestmentRecord();
-                    investmentRecord.setInvestmentRecordId(rs.getInt("investment_record_id"));
-                    investmentRecord.setInvestmentId(rs.getInt("investment_id"));
-                    investmentRecord.setUserId(userId);
-                    investmentRecord.setAmount(rs.getDouble("amount"));
-                    investmentRecord.setCurrentPrize(rs.getDouble("current_prize"));
-                    investmentRecord.setStatus(rs.getString("status"));
-                    investmentRecord.setOperation(rs.getString("operation"));
-                    investmentRecord.setCreatedAt(rs.getTimestamp("created_at"));
-                    investmentRecord.setUpdatedAt(rs.getTimestamp("updated_at"));
-                    investmentRecord.setAssetId(rs.getInt("asset_id"));
+                    InvestmentRecord investmentRecord = new InvestmentRecord(
+                            rs.getInt("investment_record_id"),
+                            rs.getInt("investment_id"),
+                            rs.getInt("user_id"),
+                            rs.getDouble("amount"),
+                            rs.getDouble("current_prize"),
+                            rs.getString("status"),
+                            rs.getString("operation"),
+                            rs.getTimestamp("created_at"),
+                            rs.getTimestamp("updated_at"),
+                            rs.getInt("asset_id")
+                    );
                     investmentRecords.add(investmentRecord);
                 }
             }
