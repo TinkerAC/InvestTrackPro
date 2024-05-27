@@ -1,4 +1,3 @@
-
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -163,8 +162,8 @@
         总持有收益:
         <c:set var="totalHoldingProfit" value="${0}" scope="page"/>
         <c:forEach var="asset" items="${assets}">
-            <c:set var="totalAsset"
-                   value="${totalAsset + asset.holdingProfit}"
+            <c:set var="totalHoldingProfit"
+                   value="${totalHoldingProfit + asset.holdingProfit}"
                    scope="page"/>
         </c:forEach>
         <fmt:formatNumber value="${totalHoldingProfit}" type="number" maxFractionDigits="2"/>元

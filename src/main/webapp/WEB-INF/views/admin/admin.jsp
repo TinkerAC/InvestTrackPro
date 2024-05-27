@@ -51,6 +51,22 @@
                     重置系统
                 </button>
             </form>
+            <form action="<%=request.getContextPath()%>/admin/randomUser" method="POST">
+                <button type="submit" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    新增5位随机用户
+                </button>
+            </form>
+            <form action="<%=request.getContextPath()%>/admin/randomBuy" method="POST">
+                <button type="submit" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    所有用户随机购买投资
+                </button>
+            </form>
+            <form action="<%=request.getContextPath()%>/admin/randomSell" method="POST">
+                <button type="submit" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    所有用户随机出售资产
+                </button>
+            </form>
+
         </div>
     </div>
 </div>

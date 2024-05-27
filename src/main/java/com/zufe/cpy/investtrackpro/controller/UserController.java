@@ -180,7 +180,6 @@ public class UserController extends HttpServlet {
     }
 
 
-
     private User createUserFromRequest(String username, String password, String email) {
         User user = new User();
         user.setUsername(username);
@@ -194,39 +193,39 @@ public class UserController extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
+        // 检查邮箱或密码是否为空
         if (isInvalid(email) || isInvalid(password)) {
             request.setAttribute("error", "邮箱或密码不能为空!");
             showLoginForm(request, response);
             return;
         }
+
+        // 检查用户是否存在
         boolean isUserExist = userService.isUserExist(email);
         if (!isUserExist) {
             request.setAttribute("error", "您还没有注册，请先注册！");
             showLoginForm(request, response);
+            return;
         }
 
+        // 尝试登录用户
         User user = userService.loginUser(email, password);
 
-
-        if (user != null) {//如果用户存在，登录成功
+        if (user != null) { // 如果用户存在，登录成功
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
 
-
-            if ("admin".equals(user.getRole())) {//如果是管理员，跳转到管理员页面
+            if ("admin".equals(user.getRole())) { // 如果是管理员，跳转到管理员页面
                 request.getRequestDispatcher("/WEB-INF/views/admin/admin.jsp").forward(request, response);
-
-            } else { //如果是用户，跳转到用户页面
-                if (request.getSession().getAttribute("originalUrl") != null) {//如果有原始请求，跳转到原始请求
-                    response.sendRedirect(request.getSession().getAttribute("originalUrl").toString());
-
-                } else {//如果没有原始请求，跳转到用户页面
-                response.sendRedirect(request.getContextPath() + "/user/profile");
+            } else { // 如果是普通用户，跳转到用户页面
+                String originalUrl = (String) request.getSession().getAttribute("originalUrl");
+                if (originalUrl != null) { // 如果有原始请求，跳转到原始请求
+                    response.sendRedirect(originalUrl);
+                } else { // 如果没有原始请求，跳转到用户个人资料页面
+                    response.sendRedirect(request.getContextPath() + "/user/profile");
                 }
             }
-
-
-        } else {//如果用户不存在，登录失败
+        } else { // 如果用户不存在，登录失败
             request.setAttribute("error", "邮箱或密码错误!");
             showLoginForm(request, response);
         }

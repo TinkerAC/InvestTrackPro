@@ -5,6 +5,7 @@ import com.zufe.cpy.investtrackpro.model.Investment;
 import com.zufe.cpy.investtrackpro.model.InvestmentDailyChange;
 import com.zufe.cpy.investtrackpro.model.InvestmentRecord;
 import com.zufe.cpy.investtrackpro.model.User;
+import com.zufe.cpy.investtrackpro.util.SecurityUtil;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -20,6 +21,7 @@ public class AdminService {
     private final InvestmentDailyChangeDao investmentDailyChangeDao = new InvestmentDailyChangeDao();
     private final InvestmentRecordDao investmentRecordDao = new InvestmentRecordDao();
     private final AssetDao assetDao = new AssetDao();
+    private final AssetService assetService = new AssetService();
     public void resetSystem() {
         List<Investment> investments = investmentDao.findAll();
         for (Investment investment : investments) {
@@ -84,4 +86,24 @@ public class AdminService {
     public List<InvestmentRecord> getInvestmentRecordList() {
         return investmentRecordDao.findAll();
     }
+
+
+    public void addRandomUser(int count) {
+
+        for (int i = 0; i < count; i++) {
+            User user = new User();
+            user.setRole("user");
+            user.setEmail("user" + random.nextInt(1000) + "@qq.com");
+            user.setPassword(SecurityUtil.hashPassword("123456"));
+            if (userDao.findByEmail(user.getEmail()) != null) {
+                i -= 1;
+                continue;
+            }
+            userDao.insert(user);
+        }
+
+
+    }
+
+
 }
