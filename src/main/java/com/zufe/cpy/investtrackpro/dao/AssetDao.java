@@ -5,6 +5,7 @@ import com.zufe.cpy.investtrackpro.util.DataBaseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +31,10 @@ public class AssetDao {
                         rs.getInt("asset_id"),
                         rs.getInt("user_id"),
                         rs.getInt("investment_id"),
-                        rs.getDouble("amount"),
+                        rs.getBigDecimal("amount"),
                         rs.getTimestamp("created_at"),
-                        rs.getDouble("holding_profit"),
-                        rs.getDouble("total_sell_revenue")
+                        rs.getBigDecimal("holding_profit"),
+                        rs.getBigDecimal("total_sell_revenue")
                 ));
 
             }
@@ -81,7 +82,7 @@ public class AssetDao {
             pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
             pstmt.setInt(1, asset.getUserId());
             pstmt.setInt(2, asset.getInvestmentId());
-            pstmt.setDouble(3, asset.getAmount());
+            pstmt.setBigDecimal(3, asset.getAmount());
             pstmt.executeUpdate();
             rs = pstmt.getGeneratedKeys();
             if (rs.next()) {
@@ -105,9 +106,9 @@ public class AssetDao {
 
         try {
             pstmt = conn.prepareStatement(sql);
-            pstmt.setDouble(1, asset.getAmount());
-            pstmt.setDouble(2, asset.getHoldingProfit());
-            pstmt.setDouble(3, asset.getTotalSellRevenue());
+            pstmt.setBigDecimal(1, asset.getAmount());
+            pstmt.setBigDecimal(2, asset.getHoldingProfit());
+            pstmt.setBigDecimal(3, asset.getTotalSellRevenue());
             pstmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
             pstmt.setInt(5, asset.getAssetId());
 
@@ -159,7 +160,7 @@ public class AssetDao {
     }
 
     //从用户id和投资id获取资产数量
-    public Double getAssetAmount(int userId, int investmentId) {
+    public BigDecimal getAssetAmount(int userId, int investmentId) {
         Connection conn = DataBaseUtil.getConnection();
         String sql = "SELECT amount FROM asset WHERE user_id=? AND investment_id=?";
         PreparedStatement pstmt = null;
@@ -170,7 +171,7 @@ public class AssetDao {
             pstmt.setInt(2, investmentId);
             rs = pstmt.executeQuery();
             if (rs.next()) {
-                return rs.getDouble("amount");
+                return rs.getBigDecimal("amount");
             }
         } catch (Exception e) {
             logger.error("Error getting asset amount", e);
@@ -195,10 +196,10 @@ public class AssetDao {
                         rs.getInt("asset_id"),
                         rs.getInt("user_id"),
                         rs.getInt("investment_id"),
-                        rs.getDouble("amount"),
+                        rs.getBigDecimal("amount"),
                         rs.getTimestamp("created_at"),
-                        rs.getDouble("holding_profit"),
-                        rs.getDouble("total_sell_revenue")
+                        rs.getBigDecimal("holding_profit"),
+                        rs.getBigDecimal("total_sell_revenue")
                 );
             }
         } catch (SQLException e) {

@@ -4,7 +4,7 @@ import com.zufe.cpy.investtrackpro.model.InvestmentDailyChange;
 import com.zufe.cpy.investtrackpro.util.DataBaseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,15 +29,15 @@ public class InvestmentDailyChangeDao {
                 InvestmentDailyChange investmentDailyChange = new InvestmentDailyChange(
                         rs.getInt("change_id"),
                         rs.getInt("investment_id"),
-                        rs.getDouble("opening_value"),
-                        rs.getDouble("closing_value"),
-                        rs.getDouble("high_value"),
-                        rs.getDouble("low_value"),
+                        rs.getBigDecimal("opening_value"),
+                        rs.getBigDecimal("closing_value"),
+                        rs.getBigDecimal("high_value"),
+                        rs.getBigDecimal("low_value"),
                         rs.getDate("date"),
-                        rs.getDouble("volume"),
+                        rs.getBigDecimal("volume"),
                         rs.getTimestamp("created_at"),
-                        rs.getDouble("change_percent"),
-                        rs.getDouble("change_value")
+                        rs.getBigDecimal("change_percent"),
+                        rs.getBigDecimal("change_value")
                 );
 
                 investmentDailyChanges.add(investmentDailyChange);
@@ -65,15 +65,15 @@ public class InvestmentDailyChangeDao {
             while (rs.next()) {
                 int changeId = rs.getInt("change_id");
                 int investmentId = rs.getInt("investment_id");
-                Double opening_value = rs.getDouble("opening_value");
-                Double closing_value = rs.getDouble("closing_value");
-                Double high_value = rs.getDouble("high_value");
-                Double low_value = rs.getDouble("low_value");
+                BigDecimal opening_value = rs.getBigDecimal("opening_value");
+                BigDecimal closing_value = rs.getBigDecimal("closing_value");
+                BigDecimal high_value = rs.getBigDecimal("high_value");
+                BigDecimal low_value = rs.getBigDecimal("low_value");
                 Date date = rs.getDate("date");
                 Timestamp createAt = rs.getTimestamp("create_at");
-                Double volume = rs.getDouble("volume");
-                Double changePercent = rs.getDouble("change_percent");
-                Double changeValue = rs.getDouble("change_value");
+                BigDecimal volume = rs.getBigDecimal("volume");
+                BigDecimal changePercent = rs.getBigDecimal("change_percent");
+                BigDecimal changeValue = rs.getBigDecimal("change_value");
                 InvestmentDailyChange investmentDailyChange = new InvestmentDailyChange(changeId, investmentId, opening_value, closing_value, high_value, low_value, date, volume, createAt, changePercent, changeValue);
                 investmentDailyChanges.add(investmentDailyChange);
             }
@@ -108,14 +108,14 @@ public class InvestmentDailyChangeDao {
         try {
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, investmentDailyChange.getInvestmentId());
-            pstmt.setDouble(2, investmentDailyChange.getOpeningValue());
-            pstmt.setDouble(3, investmentDailyChange.getClosingValue());
-            pstmt.setDouble(4, investmentDailyChange.getHighValue());
-            pstmt.setDouble(5, investmentDailyChange.getLowValue());
+            pstmt.setBigDecimal(2, investmentDailyChange.getOpeningValue());
+            pstmt.setBigDecimal(3, investmentDailyChange.getClosingValue());
+            pstmt.setBigDecimal(4, investmentDailyChange.getHighValue());
+            pstmt.setBigDecimal(5, investmentDailyChange.getLowValue());
             pstmt.setDate(6, investmentDailyChange.getDate());
-            pstmt.setDouble(7, investmentDailyChange.getVolume());
-            pstmt.setDouble(8, investmentDailyChange.getChangePercent());
-            pstmt.setDouble(9, investmentDailyChange.getChangeValue());
+            pstmt.setBigDecimal(7, investmentDailyChange.getVolume());
+            pstmt.setBigDecimal(8, investmentDailyChange.getChangePercent());
+            pstmt.setBigDecimal(9, investmentDailyChange.getChangeValue());
 
             pstmt.executeUpdate();
         } catch (Exception e) {
@@ -136,7 +136,7 @@ public class InvestmentDailyChangeDao {
             rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                InvestmentDailyChange change = new InvestmentDailyChange(rs.getInt("change_id"), rs.getInt("investment_id"), rs.getDouble("opening_value"), rs.getDouble("closing_value"), rs.getDouble("high_value"), rs.getDouble("low_value"), rs.getDate("date"), rs.getDouble("volume"), rs.getTimestamp("created_at"), rs.getDouble("change_percent"), rs.getDouble("change_value"));
+                InvestmentDailyChange change = new InvestmentDailyChange(rs.getInt("change_id"), rs.getInt("investment_id"), rs.getBigDecimal("opening_value"), rs.getBigDecimal("closing_value"), rs.getBigDecimal("high_value"), rs.getBigDecimal("low_value"), rs.getDate("date"), rs.getBigDecimal("volume"), rs.getTimestamp("created_at"), rs.getBigDecimal("change_percent"), rs.getBigDecimal("change_value"));
                 return change;
             } else {
                 return null;

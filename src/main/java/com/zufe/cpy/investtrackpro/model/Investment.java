@@ -8,9 +8,9 @@ public class Investment {
     private String name;
     private String description;
     private String category;
-    private double initialValue;
-    private double currentValue;
-    private double expectedReturn;
+    private BigDecimal initialValue;
+    private BigDecimal currentValue;
+    private BigDecimal expectedReturn;
     private int riskLevel;
     private Timestamp createdAt;
     private Timestamp updatedAt;
@@ -18,7 +18,7 @@ public class Investment {
     public Investment() {
     }
 
-    public Investment(int investmentId, String name, String description, String category, double initialValue, double currentValue, double expectedReturn, int riskLevel, Timestamp createdAt, Timestamp updatedAt) {
+    public Investment(int investmentId, String name, String description, String category, BigDecimal initialValue, BigDecimal currentValue, BigDecimal expectedReturn, int riskLevel, Timestamp createdAt, Timestamp updatedAt) {
         this.investmentId = investmentId;
         this.name = name;
         this.description = description;
@@ -45,19 +45,19 @@ public class Investment {
         return investmentId;
     }
 
-    public Double getCurrentValue() {
+    public BigDecimal getCurrentValue() {
         return currentValue;
     }
 
-    public void setCurrentValue(Double currentValue) {
+    public void setCurrentValue(BigDecimal currentValue) {
         this.currentValue = currentValue;
     }
 
-    public Double getInitialValue() {
+    public BigDecimal getInitialValue() {
         return initialValue;
     }
 
-    public void setInitialValue(Double initialValue) {
+    public void setInitialValue(BigDecimal initialValue) {
         this.initialValue = initialValue;
     }
 
@@ -89,11 +89,11 @@ public class Investment {
         this.category = category;
     }
 
-    public Double getExpectedReturn() {
+    public BigDecimal getExpectedReturn() {
         return expectedReturn;
     }
 
-    public void setExpectedReturn(Double expectedReturn) {
+    public void setExpectedReturn(BigDecimal expectedReturn) {
         this.expectedReturn = expectedReturn;
     }
 

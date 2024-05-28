@@ -29,11 +29,11 @@ public class InvestmentDao {
                 investment.setName(rs.getString("name"));
                 investment.setDescription(rs.getString("description"));
                 investment.setCategory(rs.getString("category"));
-                investment.setExpectedReturn(rs.getDouble("expected_return"));
+                investment.setExpectedReturn(rs.getBigDecimal("expected_return"));
                 investment.setRiskLevel(rs.getInt("risk_level"));
                 investment.setCreatedAt(rs.getTimestamp("created_at"));
-                investment.setInitialValue(rs.getDouble("initial_value"));
-                investment.setCurrentValue(rs.getDouble("current_value"));
+                investment.setInitialValue(rs.getBigDecimal("initial_value"));
+                investment.setCurrentValue(rs.getBigDecimal("current_value"));
                 return investment;
             }
         } catch (Exception e) {
@@ -65,9 +65,9 @@ public class InvestmentDao {
                 investment.setName(rs.getString("name"));
                 investment.setDescription(rs.getString("description"));
                 investment.setCategory(rs.getString("category"));
-                investment.setInitialValue(rs.getDouble("initial_value"));
-                investment.setCurrentValue(rs.getDouble("current_value"));
-                investment.setExpectedReturn(rs.getDouble("expected_return"));
+                investment.setInitialValue(rs.getBigDecimal("initial_value"));
+                investment.setCurrentValue(rs.getBigDecimal("current_value"));
+                investment.setExpectedReturn(rs.getBigDecimal("expected_return"));
                 investment.setRiskLevel(rs.getInt("risk_level"));
                 investment.setCreatedAt(rs.getTimestamp("created_at"));
                 investments.add(investment);
@@ -140,9 +140,9 @@ public class InvestmentDao {
                 investment.setName(rs.getString("name"));
                 investment.setDescription(rs.getString("description"));
                 investment.setCategory(rs.getString("category"));
-                investment.setExpectedReturn(rs.getDouble("expected_return"));
-                investment.setInitialValue(rs.getDouble("initial_value"));
-                investment.setCurrentValue(rs.getDouble("current_value"));
+                investment.setExpectedReturn(rs.getBigDecimal("expected_return"));
+                investment.setInitialValue(rs.getBigDecimal("initial_value"));
+                investment.setCurrentValue(rs.getBigDecimal("current_value"));
                 investment.setRiskLevel(rs.getInt("risk_level"));
                 investment.setCreatedAt(rs.getTimestamp("created_at"));
                 investments.add(investment);
@@ -170,8 +170,8 @@ public class InvestmentDao {
             ps.setString(1, investment.getName());
             ps.setString(2, investment.getDescription());
             ps.setString(3, investment.getCategory());
-            ps.setDouble(4, investment.getExpectedReturn());
-            ps.setDouble(5, investment.getRiskLevel());
+            ps.setBigDecimal(4, investment.getExpectedReturn());
+            ps.setInt(5, investment.getRiskLevel());
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -190,10 +190,10 @@ public class InvestmentDao {
             ps.setString(1, investment.getName());
             ps.setString(2, investment.getDescription());
             ps.setString(3, investment.getCategory());
-            ps.setDouble(4, investment.getExpectedReturn());
-            ps.setDouble(5, investment.getRiskLevel());
-            ps.setDouble(6, investment.getInitialValue());
-            ps.setDouble(7, investment.getCurrentValue());
+            ps.setBigDecimal(4, investment.getExpectedReturn());
+            ps.setInt(5, investment.getRiskLevel());
+            ps.setBigDecimal(6, investment.getInitialValue());
+            ps.setBigDecimal(7, investment.getCurrentValue());
             ps.setInt(8, investment.getInvestmentId());
             ps.executeUpdate();
         } catch (Exception e) {
@@ -202,6 +202,7 @@ public class InvestmentDao {
             DataBaseUtil.closeJDBC(conn, ps, null);
         }
     }
+
 
 
 

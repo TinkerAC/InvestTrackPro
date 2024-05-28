@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,7 +68,7 @@ public class InvestmentController extends HttpServlet {
         List<Investment> investments = investmentService.getAllInvestments();
         request.setAttribute("investments", investments);
 
-        //从investments生成investmentIdList
+        // 从investments生成investmentIdList
         List<Integer> investmentIdList = new ArrayList<>();
         for (Investment investment : investments) {
             investmentIdList.add(investment.getInvestmentId());
@@ -75,13 +76,19 @@ public class InvestmentController extends HttpServlet {
         List<InvestmentDailyChange> investmentDailyChanges = investmentService.getInvestmentDailyChanges(investmentIdList);
         Map<Integer, InvestmentDailyChange> investmentDailyChangeMap = new HashMap<>();
 
-        //生成从investmentId到investmentDailyChange的映射
-        for (InvestmentDailyChange investmentDailyChange : investmentDailyChanges) {
-            investmentDailyChangeMap.put(investmentDailyChange.getInvestmentId(), investmentDailyChange);
+        // 生成从investmentId到investmentDailyChange的映射
+        if (investmentDailyChanges != null && !investmentDailyChanges.isEmpty()) {
+            for (InvestmentDailyChange investmentDailyChange : investmentDailyChanges) {
+                if (investmentDailyChange != null) { // 添加空值检查
+                    investmentDailyChangeMap.put(investmentDailyChange.getInvestmentId(), investmentDailyChange);
+                }
+            }
         }
+
         request.setAttribute("investmentDailyChangeMap", investmentDailyChangeMap);
         request.getRequestDispatcher("/WEB-INF/views/investment.jsp").forward(request, response);
     }
+
 
     private void showInvestmentDetails(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -92,7 +99,7 @@ public class InvestmentController extends HttpServlet {
         List<InvestmentDailyChange> dailyChanges = investmentService.getInvestmentDailyChanges(investmentId);
 
         List<Timestamp> dates = new ArrayList<>();
-        List<Double> closingValues = new ArrayList<>();
+        List<BigDecimal> closingValues = new ArrayList<>();
         for (InvestmentDailyChange dailyChange : dailyChanges) {
             dates.add(dailyChange.getCreatedAt());
             closingValues.add(dailyChange.getClosingValue());

@@ -4,7 +4,7 @@ import com.zufe.cpy.investtrackpro.model.InvestmentRecord;
 import com.zufe.cpy.investtrackpro.util.DataBaseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,9 +28,9 @@ public class InvestmentRecordDao {
 
             pstmt.setInt(1, investmentRecord.getInvestmentId());
             pstmt.setInt(2, investmentRecord.getUserId());
-            pstmt.setDouble(3, investmentRecord.getAmount());
+            pstmt.setBigDecimal(3, investmentRecord.getAmount());
             pstmt.setString(4, investmentRecord.getOperation());
-            pstmt.setDouble(5, investmentRecord.getCurrentPrize());
+            pstmt.setBigDecimal(5, investmentRecord.getCurrentPrize());
             pstmt.setString(6, investmentRecord.getStatus());
             pstmt.setInt(7, investmentRecord.getAssetId());
             pstmt.executeUpdate();
@@ -82,8 +82,8 @@ public class InvestmentRecordDao {
                         rs.getInt("investment_record_id"),
                         rs.getInt("investment_id"),
                         rs.getInt("user_id"),
-                        rs.getDouble("amount"),
-                        rs.getDouble("current_prize"),
+                        rs.getBigDecimal("amount"),
+                        rs.getBigDecimal("current_prize"),
                         rs.getString("status"),
                         rs.getString("operation"),
                         rs.getTimestamp("created_at"),
@@ -113,8 +113,8 @@ public class InvestmentRecordDao {
                             rs.getInt("investment_record_id"),
                             rs.getInt("investment_id"),
                             rs.getInt("user_id"),
-                            rs.getDouble("amount"),
-                            rs.getDouble("current_prize"),
+                            rs.getBigDecimal("amount"),
+                            rs.getBigDecimal("current_prize"),
                             rs.getString("status"),
                             rs.getString("operation"),
                             rs.getTimestamp("created_at"),
@@ -146,8 +146,8 @@ public class InvestmentRecordDao {
                             rs.getInt("investment_record_id"),
                             rs.getInt("investment_id"),
                             rs.getInt("user_id"),
-                            rs.getDouble("amount"),
-                            rs.getDouble("current_prize"),
+                            rs.getBigDecimal("amount"),
+                            rs.getBigDecimal("current_prize"),
                             rs.getString("status"),
                             rs.getString("operation"),
                             rs.getTimestamp("created_at"),

@@ -1,26 +1,26 @@
 package com.zufe.cpy.investtrackpro.model;
 
-
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 
 public class InvestmentDailyChange {
     private int ChangeId;
     private int investmentId;
-    private Double openingValue;
-    private Double closingValue;
-    private Double highValue;
-    private Double lowValue;
+    private BigDecimal openingValue;
+    private BigDecimal closingValue;
+    private BigDecimal highValue;
+    private BigDecimal lowValue;
     private Date date;
-    private Double volume;
+    private BigDecimal volume;
     private Timestamp createdAt;
-    private double changePercent;
-    private double changeValue;
+    private BigDecimal changePercent;
+    private BigDecimal changeValue;
 
     public InvestmentDailyChange() {
     }
 
-    public InvestmentDailyChange(int changeId, int investmentId, Double openingValue, Double closingValue, Double highValue, Double lowValue, Date date, Double volume, Timestamp createdAt, double changePercent, double changeValue) {
+    public InvestmentDailyChange(int changeId, int investmentId, BigDecimal openingValue, BigDecimal closingValue, BigDecimal highValue, BigDecimal lowValue, Date date, BigDecimal volume, Timestamp createdAt, BigDecimal changePercent, BigDecimal changeValue) {
         ChangeId = changeId;
         this.investmentId = investmentId;
         this.openingValue = openingValue;
@@ -38,11 +38,11 @@ public class InvestmentDailyChange {
 
     //getters and setters
 
-    public Double getVolume() {
+    public BigDecimal getVolume() {
         return volume;
     }
 
-    public void setVolume(Double volume) {
+    public void setVolume(BigDecimal volume) {
         this.volume = volume;
     }
 
@@ -62,35 +62,35 @@ public class InvestmentDailyChange {
         this.investmentId = investmentId;
     }
 
-    public Double getOpeningValue() {
+    public BigDecimal getOpeningValue() {
         return openingValue;
     }
 
-    public void setOpeningValue(Double openingValue) {
+    public void setOpeningValue(BigDecimal openingValue) {
         this.openingValue = openingValue;
     }
 
-    public Double getClosingValue() {
+    public BigDecimal getClosingValue() {
         return closingValue;
     }
 
-    public void setClosingValue(Double closingValue) {
+    public void setClosingValue(BigDecimal closingValue) {
         this.closingValue = closingValue;
     }
 
-    public Double getHighValue() {
+    public BigDecimal getHighValue() {
         return highValue;
     }
 
-    public void setHighValue(Double highValue) {
+    public void setHighValue(BigDecimal highValue) {
         this.highValue = highValue;
     }
 
-    public Double getLowValue() {
+    public BigDecimal getLowValue() {
         return lowValue;
     }
 
-    public void setLowValue(Double lowValue) {
+    public void setLowValue(BigDecimal lowValue) {
         this.lowValue = lowValue;
     }
 
@@ -111,19 +111,19 @@ public class InvestmentDailyChange {
     }
 
 
-    public double getChangePercent() {
+    public BigDecimal getChangePercent() {
         return changePercent;
     }
 
-    public void setChangePercent(double changePercent) {
+    public void setChangePercent(BigDecimal changePercent) {
         this.changePercent = changePercent;
     }
 
-    public double getChangeValue() {
+    public BigDecimal getChangeValue() {
         return changeValue;
     }
 
-    public void setChangeValue(double changeValue) {
+    public void setChangeValue(BigDecimal changeValue) {
         this.changeValue = changeValue;
     }
 }
