@@ -98,9 +98,6 @@
         </div>
     </div>
 </div>
-
-<!-- Tailwind CSS JS -->
-<script src="https://cdn.tailwindcss.com"></script>
 </body>
 <jsp:include page="footer.jsp"/>
 </html>

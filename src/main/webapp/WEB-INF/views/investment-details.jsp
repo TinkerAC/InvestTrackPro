@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>投资详情页</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet"/>
     <link href="css/styles.css" rel="stylesheet">
 
@@ -57,14 +59,12 @@
     </c:choose>
 </div>
 
-<!-- Tailwind CSS JS -->
-<script src="https://cdn.tailwindcss.com"></script>
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
     const dates = <c:out value="${requestScope.dates}" escapeXml="false"/>;
     const values = <c:out value="${requestScope.values}" escapeXml="false"/>;
     const ctx = document.getElementById('investmentChart').getContext('2d');
+
     const investmentChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -74,18 +74,68 @@
                 data: values,
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 2,
+                pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                pointBorderColor: 'rgba(75, 192, 192, 1)',
+                pointHoverBackgroundColor: 'rgba(255, 99, 132, 1)',
+                pointHoverBorderColor: 'rgba(255, 99, 132, 1)',
                 fill: false
-
             }]
         },
         options: {
+            responsive: true,
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += context.parsed.y;
+                            }
+                            return label;
+                        }
+                    }
+                },
+                zoom: {
+                    pan: {
+                        enabled: true,
+                        mode: 'x'
+                    },
+                    zoom: {
+                        wheel: {
+                            enabled: true,
+                        },
+                        mode: 'x',
+                    }
+                }
+            },
             scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
                 y: {
                     beginAtZero: false,
                     ticks: {
                         stepSize: 0.2
+                    },
+                    title: {
+                        display: true,
+                        text: 'Price'
                     }
                 }
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeInOutBounce'
             }
         }
     });

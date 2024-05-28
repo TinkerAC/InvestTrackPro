@@ -1,6 +1,6 @@
 package com.zufe.cpy.investtrackpro.controller;
 
-import com.zufe.cpy.investtrackpro.dao.AssetDao;
+import com.google.gson.Gson;
 import com.zufe.cpy.investtrackpro.model.*;
 import com.zufe.cpy.investtrackpro.service.AssetService;
 import com.zufe.cpy.investtrackpro.service.InvestmentService;
@@ -13,8 +13,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Collections.sort;
 
 
 @WebServlet("/asset/*")
@@ -108,29 +111,75 @@ public class AssetController extends HttpServlet {
 
     private void showReportPage(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute("user");
-        //更新收益情况
-        assetService.updateAsset(user.getUserId());
+        int userId = user.getUserId();
 
-        List<Asset> assets = assetService.getAssetsByUserId(user.getUserId());
-        List<InvestmentRecord> investmentRecords = assetService.getInvestmentRecordsByUserId(user.getUserId());
+        // 更新收益情况
+        assetService.updateAsset(userId);
+
+        // 获取用户的资产、投资记录和投资信息
+        List<Asset> assets = assetService.getAssetsByUserId(userId);
+        List<InvestmentRecord> investmentRecords = assetService.getInvestmentRecordsByUserId(userId);
         List<InvestmentDailyChange> investmentDailyChanges = new ArrayList<>();
         List<Investment> investments = new ArrayList<>();
+
         for (Asset asset : assets) {
-            investmentDailyChanges.add(investmentService.getLatestInvestmentDailyChanges(asset.getInvestmentId()));
-            investments.add(investmentService.getInvestmentById(asset.getInvestmentId()));
+            int investmentId = asset.getInvestmentId();
+            investmentDailyChanges.add(investmentService.getLatestInvestmentDailyChanges(investmentId));
+            investments.add(investmentService.getInvestmentById(investmentId));
+        }
+        BigDecimal userTotalAssetValue = assetService.getTotalAssetValue(userId);
+
+        // 生成饼图数据
+        String[] labelsForPieChart = {"低风险", "中低风险", "中风险", "中高风险", "高风险"};
+        BigDecimal[] dataForPieChart = new BigDecimal[5];
+        Arrays.fill(dataForPieChart, BigDecimal.ZERO);
+
+        for (Asset asset : assets) {
+            int riskLevel = investmentService.getInvestmentById(asset.getInvestmentId()).getRiskLevel() - 1;
+            if (riskLevel >= 0 && riskLevel < dataForPieChart.length) {
+                dataForPieChart[riskLevel] = dataForPieChart[riskLevel].add(asset.getAmount().multiply(investmentService.getInvestmentById(asset.getInvestmentId()).getCurrentValue()));
+            }
         }
 
+        //生成收益率直方图数据
+        List<BigDecimal> ROIs = new ArrayList<>();
+        for (User user1 : assetService.getUserList()) {
+            ROIs.add(assetService.getReturnOnInvestment(user1.getUserId()));
+        }
+        BigDecimal userROI = assetService.getReturnOnInvestment(userId);
+
+        // 计算用户ROI的排名百分比
+        int rank = 0;
+        for (BigDecimal roi : ROIs) {
+            if (roi.compareTo(userROI) < 0) {
+                rank++;
+            } else {
+                break;
+            }
+        }
+        double userRank = (double) rank / ROIs.size() * 100;
+
+        // 传递数据到前端
+        String labelsForPieChartJson = new Gson().toJson(labelsForPieChart);
+        String dataForPieChartJson = new Gson().toJson(dataForPieChart);
+        String profitsJson = new Gson().toJson(ROIs);
 
         request.setAttribute("assets", assets);
         request.setAttribute("investments", investments);
+        request.setAttribute("userTotalAssetValue", userTotalAssetValue);
         request.setAttribute("investmentRecords", investmentRecords);
         request.setAttribute("investmentDailyChanges", investmentDailyChanges);
+        request.setAttribute("labelsForPieChart", labelsForPieChartJson);
+        request.setAttribute("dataForPieChart", dataForPieChartJson);
+        request.setAttribute("ROIs", profitsJson);
+        request.setAttribute("userROI", userROI);
+        request.setAttribute("userRank", userRank);
+
         try {
             request.getRequestDispatcher("/WEB-INF/views/report.jsp").forward(request, response);
         } catch (Exception e) {
             logger.error("Error in showReportPage", e);
         }
-
     }
 
 

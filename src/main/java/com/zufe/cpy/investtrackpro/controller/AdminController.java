@@ -78,15 +78,15 @@ public class AdminController extends HttpServlet {
 
     }
 
+    // 为每个用户随机买入5次随机份额的随机投资
     private void addRandomBoughtInvestmentRecord(HttpServletRequest request, HttpServletResponse response) {
         List<User> users = adminService.getUserList();
-        User user = adminService.getAdmin();
         List<Investment> investments = investmentService.getInvestmentList();
 
-
+        for (User user : users) {
             // 每个用户随机买入5次
             Collections.shuffle(investments);
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < 5; i++) {
                 Investment randomInvestment = investments.get(i);
                 boolean isAssetExist = assetService.isAssetExist(user.getUserId(), randomInvestment.getInvestmentId());
 
@@ -113,44 +113,47 @@ public class AdminController extends HttpServlet {
                     logger.error("Failed to add bought investment record for user:{} ", user.getUserId());
                 }
             }
+        }
 
 
         request.setAttribute("message", "随机买入成功!");
         showAdminIndexPage(request, response);
     }
 
+    // 为每个用户随机卖出部分持有的投资
     private void addRandomSellInvestmentRecord(HttpServletRequest request, HttpServletResponse response) {
-        User user = adminService.getAdmin();
-        int count = 1;
-        List<Asset> assets = assetService.getAssetsByUserId(user.getUserId());
-        Collections.shuffle(assets);
+        List<User> users = adminService.getUserList();
 
-        for (int i = 0; i < count; i++) {
-            Asset asset = assets.get(i);
-            int investmentId = asset.getInvestmentId();
-            int assetId = asset.getAssetId();
+        for (User user : users) {
+            List<Asset> assets = assetService.getAssetsByUserId(user.getUserId());
+            Collections.shuffle(assets);
 
-            // 获取最新持有量
-            BigDecimal holdingAmount = assetService.getAssetAmount(user.getUserId(), asset.getInvestmentId());
-            BigDecimal randomAmount = BigDecimal.valueOf(Math.random() * holdingAmount.doubleValue()).setScale(2, RoundingMode.HALF_UP);
+            int count = (int) (Math.random() * assets.size());
+            for (int i = 0; i < count; i++) {
+                Asset asset = assets.get(i);
+                int investmentId = asset.getInvestmentId();
+                int assetId = asset.getAssetId();
 
-            // 确保不会卖出超过持有量
-            if (holdingAmount.compareTo(randomAmount) >= 0) {
-                // 添加卖出记录
-                boolean sellSuccess = assetService.addSoldInvestmentRecord(user.getUserId(), investmentId, assetId, randomAmount);
-                if (sellSuccess) {
-                    // 成功卖出后立即更新资产持有量
-                    assetService.updateAsset(user.getUserId());
+                // 获取最新持有量
+                BigDecimal holdingAmount = assetService.getAssetAmount(user.getUserId(), investmentId);
+                BigDecimal randomAmount = BigDecimal.valueOf(Math.random() * holdingAmount.doubleValue()).setScale(2, RoundingMode.HALF_UP);
+
+                // 确保不会卖出超过持有量
+                if (holdingAmount.compareTo(randomAmount) >= 0) {
+                    // 添加卖出记录
+                    boolean sellSuccess = assetService.addSoldInvestmentRecord(user.getUserId(), investmentId, assetId, randomAmount);
+
+                    if (sellSuccess) {
+                        assetService.updateAsset(user.getUserId());
+                    } else {
+                        logger.error("Failed to add sold investment record for user:{} ", user.getUserId());
+                    }
                 }
-            } else {
-                logger.warn("Attempted to sell more than available amount for user: {}, investmentId: {}, assetId: {}, requested: {}, available: {}", user.getUserId(), investmentId, assetId, randomAmount, holdingAmount);
             }
         }
-
         request.setAttribute("message", "随机卖出成功!");
         showAdminIndexPage(request, response);
     }
-
 
 
     private void addRandomUser(HttpServletRequest request, HttpServletResponse response) {

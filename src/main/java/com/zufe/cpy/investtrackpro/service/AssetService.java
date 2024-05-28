@@ -6,6 +6,7 @@ import com.zufe.cpy.investtrackpro.dao.InvestmentRecordDao;
 import com.zufe.cpy.investtrackpro.dao.UserDao;
 import com.zufe.cpy.investtrackpro.model.Asset;
 import com.zufe.cpy.investtrackpro.model.InvestmentRecord;
+import com.zufe.cpy.investtrackpro.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -176,5 +177,39 @@ public class AssetService {
         result.put("holdingProfit", holdingProfit);
         result.put("sellRevenue", sellRevenue);
         return result;
+    }
+
+    public List<User> getUserList() {
+        return userDao.findAllUsers();
+    }
+
+    public BigDecimal getTotalAssetValue(int userId) {
+        List<Asset> assets = assetDao.findByUserId(userId);
+        BigDecimal totalValue = BigDecimal.ZERO;
+
+        for (Asset asset : assets) {
+            BigDecimal currentValue = investmentDao.findById(asset.getInvestmentId()).getCurrentValue();
+            totalValue = totalValue.add(currentValue.multiply(asset.getAmount()));
+        }
+
+        return totalValue;
+    }
+
+    public BigDecimal getReturnOnInvestment(int userId) {
+        BigDecimal totalValue = getTotalAssetValue(userId);
+        BigDecimal totalInvestment = BigDecimal.ZERO;
+
+        List<InvestmentRecord> records = investmentRecordDao.findByUserId(userId);
+        for (InvestmentRecord record : records) {
+            if ("买入".equals(record.getOperation())) {
+                totalInvestment = totalInvestment.add(record.getAmount().multiply(record.getCurrentPrize()));
+            }
+        }
+
+        if (totalInvestment.compareTo(BigDecimal.ZERO) == 0) {
+            return BigDecimal.ZERO;
+        }
+
+        return totalValue.subtract(totalInvestment).divide(totalInvestment, 4, BigDecimal.ROUND_HALF_UP);
     }
 }
