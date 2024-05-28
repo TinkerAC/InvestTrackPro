@@ -2,7 +2,7 @@ package com.zufe.cpy.investtrackpro.model;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-public class InvestmentRecord {
+public class InvestmentRecord implements Cloneable {
     private int investmentRecordId;
     private int investmentId;
     private int userId;
@@ -112,6 +112,21 @@ public class InvestmentRecord {
 
     public void setAssetId(int assetId) {
         this.assetId = assetId;
+    }
+
+    @Override
+    public InvestmentRecord clone() {
+        try {
+            InvestmentRecord clone = (InvestmentRecord) super.clone();
+            // Deep copy mutable state here
+            clone.amount = new BigDecimal(this.amount.toString());
+            clone.currentPrize = new BigDecimal(this.currentPrize.toString());
+            clone.createdAt = (Timestamp) this.createdAt.clone();
+            clone.updatedAt = (Timestamp) this.updatedAt.clone();
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }
 

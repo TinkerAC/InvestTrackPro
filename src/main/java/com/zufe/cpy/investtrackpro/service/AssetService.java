@@ -91,16 +91,26 @@ public class AssetService {
             List<InvestmentRecord> records = investmentRecordDao.find(userId, asset.getInvestmentId());
             BigDecimal currentPrice = investmentDao.findById(asset.getInvestmentId()).getCurrentValue();
 
-            Map<String, BigDecimal> profits = calculateProfits(records, currentPrice);
+            // 深拷贝 InvestmentRecord 对象
+            List<InvestmentRecord> recordsCopy = new ArrayList<>();
+            for (InvestmentRecord record : records) {
+                recordsCopy.add(record.clone());
+            }
+
+            // 计算利润和金额
+            Map<String, BigDecimal> profits = calculateProfits(recordsCopy, currentPrice);
             BigDecimal amount = calculateAmount(records);
 
+            // 更新资产信息
             asset.setHoldingProfit(profits.get("holdingProfit"));
             asset.setTotalSellRevenue(profits.get("sellRevenue"));
             asset.setAmount(amount);
 
+            // 保存更新后的资产
             assetDao.updateAsset(asset);
         }
     }
+
 
     private BigDecimal calculateAmount(List<InvestmentRecord> records) {
         BigDecimal amount = BigDecimal.ZERO;
