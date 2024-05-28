@@ -46,6 +46,11 @@
                     「Made In Haven!」
                 </button>
             </form>
+            <form action="<%=request.getContextPath()%>/asset/view" method="POST">
+                <button type="submit" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                    查看资产
+                </button>
+            </form>
             <form action="<%=request.getContextPath()%>/admin/resetSystem" method="POST">
                 <button type="submit" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
                     重置系统

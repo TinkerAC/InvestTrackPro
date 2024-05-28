@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.List;
 
@@ -77,91 +79,78 @@ public class AdminController extends HttpServlet {
     }
 
     private void addRandomBoughtInvestmentRecord(HttpServletRequest request, HttpServletResponse response) {
-
         List<User> users = adminService.getUserList();
+        User user = adminService.getAdmin();
         List<Investment> investments = investmentService.getInvestmentList();
 
-        for (User user : users) {
+
             // 每个用户随机买入5次
-            for (int i = 0; i < 5; i++) {
-                if (investments.isEmpty()) {
-                    continue; // 避免投资列表为空时导致异常
-                }
-                int investmentIndex = (int) (Math.random() * investments.size());
-                Investment randomInvestment = investments.get(investmentIndex);
+            Collections.shuffle(investments);
+            for (int i = 0; i < 1; i++) {
+                Investment randomInvestment = investments.get(i);
                 boolean isAssetExist = assetService.isAssetExist(user.getUserId(), randomInvestment.getInvestmentId());
 
-                // 如果用户没有买过，就添加初始记录
-                int assetId = -1;
+                int assetId;
                 if (!isAssetExist) {
                     Asset asset = new Asset();
                     asset.setUserId(user.getUserId());
                     asset.setInvestmentId(randomInvestment.getInvestmentId());
-                    asset.setAmount(0.0);
+                    asset.setAmount(BigDecimal.ZERO);
                     assetId = assetService.addAsset(asset);
                 } else {
                     assetId = assetService.getAssetId(user.getUserId(), randomInvestment.getInvestmentId());
                 }
 
-                // 调用服务层添加投资记录
                 if (assetId == -1) {
                     continue;
                 }
 
                 // 随机买入0~15份，保留两位小数
-                double randomAmount = Math.random() * 15;
-                double roundedAmount = Double.parseDouble(String.format("%.2f", randomAmount));
+                BigDecimal randomAmount = BigDecimal.valueOf(Math.random() * 15).setScale(2, RoundingMode.HALF_UP);
 
-                boolean isSuccess = assetService.addBoughtInvestmentRecord(user.getUserId(), randomInvestment.getInvestmentId(), assetId, roundedAmount);
+                boolean isSuccess = assetService.addBoughtInvestmentRecord(user.getUserId(), randomInvestment.getInvestmentId(), assetId, randomAmount);
+                if (!isSuccess) {
+                    logger.error("Failed to add bought investment record for user:{} ", user.getUserId());
+                }
             }
-        }
 
-        // 更新所有用户的资产
-        for (User user : users) {
-            assetService.updateAsset(user.getUserId());
-        }
 
+        request.setAttribute("message", "随机买入成功!");
         showAdminIndexPage(request, response);
     }
-
 
     private void addRandomSellInvestmentRecord(HttpServletRequest request, HttpServletResponse response) {
-        List<User> users = adminService.getUserList();
+        User user = adminService.getAdmin();
+        int count = 1;
+        List<Asset> assets = assetService.getAssetsByUserId(user.getUserId());
+        Collections.shuffle(assets);
 
-        for (User user : users) {
-            // 获取用户持有的资产列表
-            List<Asset> assets = assetService.getAssetsByUserId(user.getUserId());
-            // 随机选取卖出次数，范围为0~持有资产数
-            int count = (int) (Math.random() * assets.size());
-            // 打乱资产列表，确保每次选取的是不重复的资产
-            Collections.shuffle(assets);
+        for (int i = 0; i < count; i++) {
+            Asset asset = assets.get(i);
+            int investmentId = asset.getInvestmentId();
+            int assetId = asset.getAssetId();
 
-            for (int i = 0; i < count; i++) {
-                Asset asset = assets.get(i);
+            // 获取最新持有量
+            BigDecimal holdingAmount = assetService.getAssetAmount(user.getUserId(), asset.getInvestmentId());
+            BigDecimal randomAmount = BigDecimal.valueOf(Math.random() * holdingAmount.doubleValue()).setScale(2, RoundingMode.HALF_UP);
 
-                // 获取用户持有该资产的数量
-                Double holdingAmount = assetService.getAssetAmount(user.getUserId(), asset.getInvestmentId());
-                int investmentId = asset.getInvestmentId();
-                int assetId = asset.getAssetId();
-                // 随机选取卖出份额，范围为0~持有份数，保留两位小数
-                double amount = Double.parseDouble(String.format("%.2f", Math.random() * holdingAmount));
-
-                if (holdingAmount < amount) {
-                    request.setAttribute("message", "卖出失败，持有量不足");
-                    try {
-                        request.getRequestDispatcher("/WEB-INF/views/tradePage.jsp").forward(request, response);
-                    } catch (Exception e) {
-                        logger.error("Error in addSoldInvestmentRecord", e);
-                    }
-                    return;
+            // 确保不会卖出超过持有量
+            if (holdingAmount.compareTo(randomAmount) >= 0) {
+                // 添加卖出记录
+                boolean sellSuccess = assetService.addSoldInvestmentRecord(user.getUserId(), investmentId, assetId, randomAmount);
+                if (sellSuccess) {
+                    // 成功卖出后立即更新资产持有量
+                    assetService.updateAsset(user.getUserId());
                 }
-
-                assetService.addSoldInvestmentRecord(user.getUserId(), investmentId, assetId, amount);
-                assetService.updateAsset(user.getUserId());
+            } else {
+                logger.warn("Attempted to sell more than available amount for user: {}, investmentId: {}, assetId: {}, requested: {}, available: {}", user.getUserId(), investmentId, assetId, randomAmount, holdingAmount);
             }
         }
+
+        request.setAttribute("message", "随机卖出成功!");
         showAdminIndexPage(request, response);
     }
+
 
 
     private void addRandomUser(HttpServletRequest request, HttpServletResponse response) {
@@ -171,6 +160,7 @@ public class AdminController extends HttpServlet {
 
     private void resetSystem(HttpServletRequest request, HttpServletResponse response) {
         adminService.resetSystem();
+        request.setAttribute("message", "系统重置成功!");
         showAdminIndexPage(request, response);
     }
 
@@ -232,9 +222,6 @@ public class AdminController extends HttpServlet {
             logger.error("Error in showAdminIndexPage", e);
         }
     }
-
-
-
 
 
 }

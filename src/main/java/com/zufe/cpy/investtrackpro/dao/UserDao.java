@@ -199,9 +199,9 @@ public class UserDao {
     }
 
 
-    public List<User> findAll() {
+    public List<User> findAllUsers() {
         Connection connection = DataBaseUtil.getConnection();
-        String sql = "SELECT * FROM user";
+        String sql = "SELECT * FROM user WHERE role='user'";
         PreparedStatement ps = null;
         ResultSet rs = null;
         List<User> users = new ArrayList<>();
@@ -256,5 +256,57 @@ public class UserDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+
+    public void insert(Connection conn, User user) {
+        String sql = "INSERT INTO user (username, password, email, phone, first_name, last_name, address) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, user.getUsername());
+            ps.setString(2, user.getPassword());
+            ps.setString(3, user.getEmail());
+            ps.setString(4, user.getPhone());
+            ps.setString(5, user.getFirstName());
+            ps.setString(6, user.getLastName());
+            ps.setString(7, user.getAddress());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            logger.error("插入用户失败", e);
+        }
+    }
+
+    public void deleteAll() {
+        connection = DataBaseUtil.getConnection();
+        String sql = "DELETE FROM user where role='user'";
+        PreparedStatement ps = null;
+        try {
+            ps = connection.prepareStatement(sql);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            logger.error("删除所有用户失败", e);
+        } finally {
+            DataBaseUtil.closeJDBC(connection, ps, null);
+        }
+    }
+
+
+    public User findAdmin() {
+        connection = DataBaseUtil.getConnection();
+        String sql = "SELECT * FROM user WHERE role='admin'";
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = connection.prepareStatement(sql);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                User user = new User(rs.getInt("user_id"), rs.getString("username"), rs.getString("password"), rs.getString("email"), rs.getString("phone"), rs.getString("first_name"), rs.getString("last_name"), rs.getString("address"), rs.getTimestamp("created_at"), rs.getTimestamp("updated_at"), rs.getString("role"));
+                return user;
+            }
+        } catch (SQLException e) {
+            logger.error("Error finding admin", e);
+        } finally {
+            DataBaseUtil.closeJDBC(connection, ps, rs);
+        }
+        return null;
     }
 }

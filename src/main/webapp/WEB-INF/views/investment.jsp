@@ -89,7 +89,7 @@
             </form>
         </div>
         <!-- 如果有投资信息，则显示表格 -->
-        <c:if test="${not empty investments}">
+        <c:if test="${not empty investments && not empty investmentDailyChangeMap}">
             <table id="investmentTable" class="w-full border-collapse border border-gray-300">
                 <thead>
                 <tr class="bg-gray-100">
@@ -136,7 +136,7 @@
 
 
         <!-- 如果没有投资信息，显示提示消息 -->
-        <c:if test="${empty investments}">
+        <c:if test="${empty investments|| empty investmentDailyChangeMap}">
             <div class="message text-center text-gray-500 mt-6">没有找到投资信息。</div>
         </c:if>
     </div>

@@ -9,6 +9,7 @@ import com.zufe.cpy.investtrackpro.model.InvestmentRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +24,6 @@ public class AssetService {
     private final AssetDao assetDao = new AssetDao();
     private static final Logger logger = LoggerFactory.getLogger(AssetService.class);
 
-
     public List<Asset> getAssetsByUserId(int userId) {
         return assetDao.findByUserId(userId);
     }
@@ -32,53 +32,54 @@ public class AssetService {
         return assetDao.isAssetExist(userId, investmentId);
     }
 
-    public boolean addBoughtInvestmentRecord(int userId, int investmentId, int assetId, double amount) {
-        Double currentPrize = investmentDao.findById(investmentId).getCurrentValue();
+    public boolean addBoughtInvestmentRecord(int userId, int investmentId, int assetId, BigDecimal amount) {
+        BigDecimal currentPrice = investmentDao.findById(investmentId).getCurrentValue();
 
         InvestmentRecord investmentRecord = new InvestmentRecord();
         investmentRecord.setInvestmentId(investmentId);
         investmentRecord.setUserId(userId);
         investmentRecord.setAmount(amount);
-        investmentRecord.setCurrentPrize(currentPrize);
+        investmentRecord.setCurrentPrize(currentPrice);
         investmentRecord.setStatus("进行中");
         investmentRecord.setOperation("买入");
         investmentRecord.setAssetId(assetId);
 
-
         if (!userDao.isExist(userId)) {
             logger.error("User ID does not exist: " + investmentRecord.getUserId());
-
+            return false;
         }
 
         boolean success = investmentRecordDao.insertInvestmentRecord(investmentRecord);
-        updateAsset(userId);
+        if (success) {
+            updateAsset(userId);
+        }
         return success;
-
-
     }
 
-    public boolean addSoldInvestmentRecord(int userId, int investmentId, int assetId, double amount) {
+    public boolean addSoldInvestmentRecord(int userId, int investmentId, int assetId, BigDecimal amount) {
+        BigDecimal currentPrice = investmentDao.findById(investmentId).getCurrentValue();
 
-        Double currentPrize = investmentDao.findById(investmentId).getCurrentValue();
         InvestmentRecord investmentRecord = new InvestmentRecord();
         investmentRecord.setInvestmentId(investmentId);
         investmentRecord.setUserId(userId);
         investmentRecord.setAmount(amount);
-        investmentRecord.setCurrentPrize(currentPrize);
+        investmentRecord.setCurrentPrize(currentPrice);
         investmentRecord.setStatus("进行中");
         investmentRecord.setOperation("卖出");
         investmentRecord.setAssetId(assetId);
 
         if (!userDao.isExist(userId)) {
             logger.error("User ID does not exist: " + investmentRecord.getUserId());
+            return false;
         }
 
         boolean success = investmentRecordDao.insertInvestmentRecord(investmentRecord);
-        updateAsset(userId);
+        if (success) {
+            updateAsset(userId);
+        }
         return success;
     }
 
-    //返回资产id
     public int addAsset(Asset asset) {
         return assetDao.insertAsset(asset);
     }
@@ -88,48 +89,40 @@ public class AssetService {
 
         for (Asset asset : assets) {
             List<InvestmentRecord> records = investmentRecordDao.find(userId, asset.getInvestmentId());
-            Double currentPrice = investmentDao.findById(asset.getInvestmentId()).getCurrentValue();
+            BigDecimal currentPrice = investmentDao.findById(asset.getInvestmentId()).getCurrentValue();
 
-            // 计算持有收益和卖出收益
-            Map<String, Double> profits = calculateProfits(records, currentPrice);
+            Map<String, BigDecimal> profits = calculateProfits(records, currentPrice);
+            BigDecimal amount = calculateAmount(records);
 
-            //计算持有数量
-            double amount = calculateAmount(records);
-
-            // 更新资产信息
             asset.setHoldingProfit(profits.get("holdingProfit"));
             asset.setTotalSellRevenue(profits.get("sellRevenue"));
             asset.setAmount(amount);
 
             assetDao.updateAsset(asset);
         }
-
     }
 
-    private double calculateAmount(List<InvestmentRecord> records) {
-        Double amount = 0.0;
+    private BigDecimal calculateAmount(List<InvestmentRecord> records) {
+        BigDecimal amount = BigDecimal.ZERO;
         for (InvestmentRecord record : records) {
             if ("买入".equals(record.getOperation())) {
-                amount += record.getAmount();
+                amount = amount.add(record.getAmount());
             } else if ("卖出".equals(record.getOperation())) {
-                amount -= record.getAmount();
+                amount = amount.subtract(record.getAmount());
             }
         }
         return amount;
     }
 
-
-    //返回资产id
     public int getAssetId(int userId, int investmentId) {
         return assetDao.getAssetId(userId, investmentId);
     }
 
-    //根据用户id返回交易记录
     public List<InvestmentRecord> getInvestmentRecordsByUserId(int userId) {
         return investmentRecordDao.findByUserId(userId);
     }
 
-    public Double getAssetAmount(int userId, int investmentId) {
+    public BigDecimal getAssetAmount(int userId, int investmentId) {
         return assetDao.getAssetAmount(userId, investmentId);
     }
 
@@ -137,53 +130,41 @@ public class AssetService {
         return assetDao.find(userId, investmentId);
     }
 
-
-    public static Map<String, Double> calculateProfits(List<InvestmentRecord> records, double currentPrice) {
-        double holdingProfit = 0.0;
-        double sellRevenue = 0.0;
+    public static Map<String, BigDecimal> calculateProfits(List<InvestmentRecord> records, BigDecimal currentPrice) {
+        BigDecimal holdingProfit = BigDecimal.ZERO;
+        BigDecimal sellRevenue = BigDecimal.ZERO;
         Map<Integer, List<InvestmentRecord>> purchases = new HashMap<>();
 
         for (InvestmentRecord record : records) {
             if ("买入".equals(record.getOperation())) {
                 purchases.putIfAbsent(record.getAssetId(), new ArrayList<>());
                 purchases.get(record.getAssetId()).add(record);
-                // 计算持有收益
-                double profit = (currentPrice - record.getCurrentPrize()) * record.getAmount();
-                holdingProfit += profit;
+                BigDecimal profit = (currentPrice.subtract(record.getCurrentPrize())).multiply(record.getAmount());
+                holdingProfit = holdingProfit.add(profit);
             } else if ("卖出".equals(record.getOperation())) {
                 List<InvestmentRecord> purchaseList = purchases.get(record.getAssetId());
-                double amountToSell = record.getAmount();
+                BigDecimal amountToSell = record.getAmount();
 
-                while (amountToSell > 0 && purchaseList != null && !purchaseList.isEmpty()) {
+                while (amountToSell.compareTo(BigDecimal.ZERO) > 0 && purchaseList != null && !purchaseList.isEmpty()) {
                     InvestmentRecord purchase = purchaseList.get(0);
-                    if (purchase.getAmount() <= amountToSell) {
-                        double profit = (record.getCurrentPrize() - purchase.getCurrentPrize()) * purchase.getAmount();
-                        sellRevenue += profit;
-                        amountToSell -= purchase.getAmount();
+                    if (purchase.getAmount().compareTo(amountToSell) <= 0) {
+                        BigDecimal profit = (record.getCurrentPrize().subtract(purchase.getCurrentPrize())).multiply(purchase.getAmount());
+                        sellRevenue = sellRevenue.add(profit);
+                        amountToSell = amountToSell.subtract(purchase.getAmount());
                         purchaseList.remove(0);
                     } else {
-                        double profit = (record.getCurrentPrize() - purchase.getCurrentPrize()) * amountToSell;
-                        sellRevenue += profit;
-                        purchase.setAmount(purchase.getAmount() - amountToSell);
-                        amountToSell = 0;
+                        BigDecimal profit = (record.getCurrentPrize().subtract(purchase.getCurrentPrize())).multiply(amountToSell);
+                        sellRevenue = sellRevenue.add(profit);
+                        purchase.setAmount(purchase.getAmount().subtract(amountToSell));
+                        amountToSell = BigDecimal.ZERO;
                     }
                 }
             }
         }
 
-        Map<String, Double> result = new HashMap<>();
+        Map<String, BigDecimal> result = new HashMap<>();
         result.put("holdingProfit", holdingProfit);
         result.put("sellRevenue", sellRevenue);
         return result;
-    }
-
-    private static class PurchaseRecord {
-        double price;
-        double amount;
-
-        public PurchaseRecord(double price, double amount) {
-            this.price = price;
-            this.amount = amount;
-        }
     }
 }

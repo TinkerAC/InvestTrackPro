@@ -1,13 +1,13 @@
 package com.zufe.cpy.investtrackpro.model;
-
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class InvestmentRecord {
     private int investmentRecordId;
     private int investmentId;
     private int userId;
-    private Double amount;
-    private Double currentPrize;//交易发生时的价格
+    private BigDecimal amount;
+    private BigDecimal currentPrize;//交易发生时的价格
     private String operation;//"买入"、"卖出"
     private String status;//"买入":持有中,已卖出; "卖出":"无"
     private Timestamp createdAt;
@@ -19,7 +19,7 @@ public class InvestmentRecord {
     public InvestmentRecord() {
     }
 
-    public InvestmentRecord(int investmentRecordId, int investmentId, int userId, Double amount, Double currentPrize, String status, String operation, Timestamp createdAt, Timestamp updatedAt, int assetId) {
+    public InvestmentRecord(int investmentRecordId, int investmentId, int userId, BigDecimal amount, BigDecimal currentPrize, String status, String operation, Timestamp createdAt, Timestamp updatedAt, int assetId) {
         this.investmentRecordId = investmentRecordId;
         this.investmentId = investmentId;
         this.userId = userId;
@@ -66,19 +66,19 @@ public class InvestmentRecord {
         this.userId = userId;
     }
 
-    public Double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
-    public Double getCurrentPrize() {
+    public BigDecimal getCurrentPrize() {
         return currentPrize;
     }
 
-    public void setCurrentPrize(Double currentPrize) {
+    public void setCurrentPrize(BigDecimal currentPrize) {
         this.currentPrize = currentPrize;
     }
 

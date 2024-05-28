@@ -1,20 +1,21 @@
 package com.zufe.cpy.investtrackpro.model;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class Asset {
     private int assetId;
     private int userId;
     private int investmentId;
-    private double amount;
+    private BigDecimal amount;
     private Timestamp createdAt;
-    private Double holdingProfit;
-    private Double totalSellRevenue;
+    private BigDecimal holdingProfit;
+    private BigDecimal  totalSellRevenue;
 
     public Asset() {
     }
 
-    public Asset(int assetId, int userId, int investmentId, double amount, Timestamp createdAt,  Double holdingProfit, Double totalSellRevenue) {
+    public Asset(int assetId, int userId, int investmentId, BigDecimal amount, Timestamp createdAt,  BigDecimal holdingProfit, BigDecimal totalSellRevenue) {
         this.assetId = assetId;
         this.userId = userId;
         this.investmentId = investmentId;
@@ -44,11 +45,11 @@ public class Asset {
         this.investmentId = investmentId;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
@@ -62,19 +63,19 @@ public class Asset {
 
 
 
-    public Double getHoldingProfit() {
+    public BigDecimal getHoldingProfit() {
         return holdingProfit;
     }
 
-    public void setHoldingProfit(Double holdingProfit) {
+    public void setHoldingProfit(BigDecimal holdingProfit) {
         this.holdingProfit = holdingProfit;
     }
 
-    public Double getTotalSellRevenue() {
+    public BigDecimal getTotalSellRevenue() {
         return totalSellRevenue;
     }
 
-    public void setTotalSellRevenue(Double totalSellRevenue) {
+    public void setTotalSellRevenue(BigDecimal totalSellRevenue) {
         this.totalSellRevenue = totalSellRevenue;
     }
 }

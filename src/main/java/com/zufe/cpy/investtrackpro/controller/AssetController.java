@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -161,7 +162,7 @@ public class AssetController extends HttpServlet {
             Asset asset = new Asset();
             asset.setUserId(user.getUserId());
             asset.setInvestmentId(investmentId);
-            asset.setAmount(0.0);
+            asset.setAmount(BigDecimal.ZERO);
             assetId = assetService.addAsset(asset);
         } else {
             assetId = assetService.getAssetId(user.getUserId(), investmentId);
@@ -180,7 +181,7 @@ public class AssetController extends HttpServlet {
             return;
         }
 
-        boolean isSuccess = assetService.addBoughtInvestmentRecord(user.getUserId(), investmentId, assetId, Double.parseDouble(request.getParameter("amount")));
+        boolean isSuccess = assetService.addBoughtInvestmentRecord(user.getUserId(), investmentId, assetId, new BigDecimal(request.getParameter("amount")));
 
 
         if (!isSuccess) {
@@ -201,7 +202,31 @@ public class AssetController extends HttpServlet {
 
     private void addSoldInvestmentRecord(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute("user");
-        int investmentId = Integer.parseInt(request.getParameter("investmentId"));
+        if (user == null) {
+            request.setAttribute("message", "用户未登录");
+            try {
+                request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
+            } catch (Exception e) {
+                logger.error("Error in addSoldInvestmentRecord - User not logged in", e);
+            }
+            return;
+        }
+
+        int investmentId;
+        BigDecimal amount;
+        try {
+            investmentId = Integer.parseInt(request.getParameter("investmentId"));
+            amount = new BigDecimal(request.getParameter("amount"));
+        } catch (NumberFormatException e) {
+            request.setAttribute("message", "无效的投资ID或卖出数量");
+            try {
+                request.getRequestDispatcher("/WEB-INF/views/tradePage.jsp").forward(request, response);
+            } catch (Exception ex) {
+                logger.error("Error in addSoldInvestmentRecord - Invalid investmentId or amount", ex);
+            }
+            return;
+        }
+
         int assetId = assetService.getAssetId(user.getUserId(), investmentId);
 
         boolean isAssetExist = assetService.isAssetExist(user.getUserId(), investmentId);
@@ -210,27 +235,22 @@ public class AssetController extends HttpServlet {
             try {
                 request.getRequestDispatcher("/WEB-INF/views/tradePage.jsp").forward(request, response);
             } catch (Exception e) {
-                logger.error("Error in addSoldInvestmentRecord", e);
+                logger.error("Error in addSoldInvestmentRecord - Asset does not exist", e);
             }
             return;
         }
 
-        //用户持有该资产的数量
-        Double holdingAmount = assetService.getAssetAmount(user.getUserId(), investmentId);
-        Investment investment = investmentService.getInvestmentById(investmentId);
-        Double amount = Double.parseDouble(request.getParameter("amount"));
+        BigDecimal holdingAmount = assetService.getAssetAmount(user.getUserId(), investmentId);
 
-        if (holdingAmount < amount) {
-
+        if (holdingAmount.compareTo(amount) < 0) {
             request.setAttribute("message", "卖出失败，持有量不足");
             try {
                 request.getRequestDispatcher("/WEB-INF/views/tradePage.jsp").forward(request, response);
             } catch (Exception e) {
-                logger.error("Error in addSoldInvestmentRecord", e);
+                logger.error("Error in addSoldInvestmentRecord - Insufficient holding amount", e);
             }
             return;
         }
-
 
         boolean isSuccess = assetService.addSoldInvestmentRecord(user.getUserId(), investmentId, assetId, amount);
 
@@ -241,14 +261,13 @@ public class AssetController extends HttpServlet {
         }
         assetService.updateAsset(user.getUserId());
 
-
         try {
             request.getRequestDispatcher("/WEB-INF/views/tradePage.jsp").forward(request, response);
-
         } catch (Exception e) {
             logger.error("Error in addSoldInvestmentRecord", e);
         }
     }
+
 
     private void removeInvestment(HttpServletRequest request, HttpServletResponse response) {
         throw new UnsupportedOperationException("Not supported yet.");
