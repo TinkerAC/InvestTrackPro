@@ -17,8 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Collections.sort;
-
 
 @WebServlet("/asset/*")
 public class AssetController extends HttpServlet {
@@ -136,9 +134,12 @@ public class AssetController extends HttpServlet {
 
         for (Asset asset : assets) {
             int riskLevel = investmentService.getInvestmentById(asset.getInvestmentId()).getRiskLevel() - 1;
-            if (riskLevel >= 0 && riskLevel < dataForPieChart.length) {
-                dataForPieChart[riskLevel] = dataForPieChart[riskLevel].add(asset.getAmount().multiply(investmentService.getInvestmentById(asset.getInvestmentId()).getCurrentValue()));
-            }
+            dataForPieChart[riskLevel] = dataForPieChart[riskLevel].add(asset.getAmount().multiply(investmentService.getInvestmentById(asset.getInvestmentId()).getCurrentValue()));
+
+        }
+
+        for (BigDecimal data : dataForPieChart) {
+            System.out.println(data);
         }
 
         //生成收益率直方图数据
@@ -147,6 +148,32 @@ public class AssetController extends HttpServlet {
             ROIs.add(assetService.getReturnOnInvestment(user1.getUserId()));
         }
         BigDecimal userROI = assetService.getReturnOnInvestment(userId);
+
+        //生成用户资产成分数据
+        BigDecimal[] dataForComponentPieChart = new BigDecimal[5];
+        Arrays.fill(dataForComponentPieChart, BigDecimal.ZERO);
+        for (Asset asset : assets) {
+            String Category = investmentService.getInvestmentById(asset.getInvestmentId()).getCategory();
+            // ["股票", "债券", "基金","房地产","大宗商品"],
+            switch (Category) {
+                case "股票":
+                    dataForComponentPieChart[0] = dataForComponentPieChart[0].add(asset.getAmount().multiply(investmentService.getInvestmentById(asset.getInvestmentId()).getCurrentValue()));
+                    break;
+                case "债券":
+                    dataForComponentPieChart[1] = dataForComponentPieChart[1].add(asset.getAmount().multiply(investmentService.getInvestmentById(asset.getInvestmentId()).getCurrentValue()));
+                    break;
+                case "基金":
+                    dataForComponentPieChart[2] = dataForComponentPieChart[2].add(asset.getAmount().multiply(investmentService.getInvestmentById(asset.getInvestmentId()).getCurrentValue()));
+                    break;
+                case "房地产":
+                    dataForComponentPieChart[3] = dataForComponentPieChart[3].add(asset.getAmount().multiply(investmentService.getInvestmentById(asset.getInvestmentId()).getCurrentValue()));
+                    break;
+                case "大宗商品":
+                    dataForComponentPieChart[4] = dataForComponentPieChart[4].add(asset.getAmount().multiply(investmentService.getInvestmentById(asset.getInvestmentId()).getCurrentValue()));
+                    break;
+            }
+
+        }
 
         // 计算用户ROI的排名百分比
         int rank = 0;
@@ -160,20 +187,20 @@ public class AssetController extends HttpServlet {
         double userRank = (double) rank / ROIs.size() * 100;
 
         // 传递数据到前端
-        String labelsForPieChartJson = new Gson().toJson(labelsForPieChart);
         String dataForPieChartJson = new Gson().toJson(dataForPieChart);
         String profitsJson = new Gson().toJson(ROIs);
+        String dataForComponentPieChartJson = new Gson().toJson(dataForComponentPieChart);
 
         request.setAttribute("assets", assets);
         request.setAttribute("investments", investments);
         request.setAttribute("userTotalAssetValue", userTotalAssetValue);
         request.setAttribute("investmentRecords", investmentRecords);
         request.setAttribute("investmentDailyChanges", investmentDailyChanges);
-        request.setAttribute("labelsForPieChart", labelsForPieChartJson);
         request.setAttribute("dataForPieChart", dataForPieChartJson);
         request.setAttribute("ROIs", profitsJson);
         request.setAttribute("userROI", userROI);
-        request.setAttribute("userRank", userRank);
+        request.setAttribute("userRank", userRank);//用户打败了userRank%的用户
+        request.setAttribute("dataForComponentPieChart", dataForComponentPieChartJson);
 
         try {
             request.getRequestDispatcher("/WEB-INF/views/report.jsp").forward(request, response);

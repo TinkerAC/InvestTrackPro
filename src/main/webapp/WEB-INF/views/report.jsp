@@ -100,18 +100,27 @@
     </section>
 
     <section class="mb-8 bg-white p-4 shadow rounded">
-        <div class="mb-4 flex justify-center">
-            <canvas id="myPieChart" class="w-1/2 max-w-sm"></canvas>
+        <div class="flex justify-center">
+            <div class="w-1/2 max-w-sm p-2">
+                <canvas id="myPieChart"></canvas>
+            </div>
+            <div class="w-1/2 max-w-sm p-2">
+                <canvas id="componentPie"></canvas>
+            </div>
         </div>
+
         <script>
-            const ctxPie = document.getElementById('myPieChart').getContext('2d');
-            new Chart(ctxPie, {
+            const dataForPieChart =${requestScope.dataForPieChart};
+            const dataForComponentPieChart = ${requestScope.dataForComponentPieChart};
+
+            const ctxPie1 = document.getElementById('myPieChart').getContext('2d');
+            new Chart(ctxPie1, {
                 type: 'pie',
                 data: {
-                    labels: ${requestScope.labelsForPieChart},
+                    labels: ["低风险", "中低风险", "中风险", "中高风险", "高风险"],
                     datasets: [{
                         label: '资产分布',
-                        data: ${requestScope.dataForPieChart},
+                        data: dataForPieChart,
                         backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)'],
                         borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)', 'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'],
                         borderWidth: 1
@@ -127,7 +136,42 @@
                         tooltip: {
                             callbacks: {
                                 label: function (context) {
-                                    return `${context.label || ''}: ${context.parsed != null ? context.parsed : ''}`;
+                                    const label = context.label || '';
+                                    const value = context.parsed !== null ? context.parsed : '';
+                                    return label + ': ' + value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const ctxPie2 = document.getElementById('componentPie').getContext('2d');
+            new Chart(ctxPie2, {
+                type: 'pie',
+                data: {
+                    labels: ["股票", "债券", "基金", "房地产", "大宗商品"],
+                    datasets: [{
+                        label: '资产成分',
+                        data: dataForComponentPieChart,
+                        backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)'],
+                        borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)', 'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed !== null ? context.parsed : '';
+                                    return label + ': ' + value;
                                 }
                             }
                         }
@@ -136,6 +180,7 @@
             });
         </script>
     </section>
+
 
 
     <section class="mb-8">

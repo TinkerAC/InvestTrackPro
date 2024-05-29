@@ -195,21 +195,37 @@ public class AssetService {
         return totalValue;
     }
 
+    //获取用户投资回报率
     public BigDecimal getReturnOnInvestment(int userId) {
-        BigDecimal totalValue = getTotalAssetValue(userId);
-        BigDecimal totalInvestment = BigDecimal.ZERO;
+        BigDecimal totalReturn = getTotalReturn(userId);
+        BigDecimal totalInvestment = getTotalInvestment(userId);
 
+
+        return totalInvestment.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : totalReturn.divide(totalInvestment, 4, BigDecimal.ROUND_HALF_UP);
+    }
+
+    //获取用户所有买入资产金额加总
+    private BigDecimal getTotalInvestment(int userId) {
         List<InvestmentRecord> records = investmentRecordDao.findByUserId(userId);
+        BigDecimal totalValue = BigDecimal.ZERO;
         for (InvestmentRecord record : records) {
             if ("买入".equals(record.getOperation())) {
-                totalInvestment = totalInvestment.add(record.getAmount().multiply(record.getCurrentPrize()));
+                totalValue = totalValue.add(record.getAmount().multiply(record.getCurrentPrize()));
             }
         }
-
-        if (totalInvestment.compareTo(BigDecimal.ZERO) == 0) {
-            return BigDecimal.ZERO;
-        }
-
-        return totalValue.subtract(totalInvestment).divide(totalInvestment, 4, BigDecimal.ROUND_HALF_UP);
+        return totalValue;
     }
+
+    //获取用户持有收益+卖出收益的总和
+    private BigDecimal getTotalReturn(int userId) {
+        List<Asset> assets = assetDao.findByUserId(userId);
+        BigDecimal totalValue = BigDecimal.ZERO;
+        for (Asset asset : assets) {
+            totalValue = totalValue.add(asset.getTotalSellRevenue());
+            totalValue = totalValue.add(asset.getHoldingProfit());
+        }
+        return totalValue;
+    }
+
+
 }
