@@ -99,10 +99,11 @@
         }
     </script>
 </head>
-<body class="bg-gray-50">
-<header class="mb-8 w-full">
+
+<body class="bg-blue-100">
+<header class="mb-8 w-full" style="margin-top: 20px">
     <nav class="bg-white shadow p-6 rounded-lg flex justify-between items-center w-full max-w-6xl mx-auto">
-        <h1 class="text-2xl font-bold text-gray-700">我的资产管理</h1>
+        <h1 class="text-2xl font-bold text-gray-700">交易页面</h1>
         <div>
             <!-- Personal Home Page Link -->
             <a href="<%=request.getContextPath()%>/user/profile"

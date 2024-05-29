@@ -22,6 +22,24 @@
     </style>
 </head>
 <body class="bg-blue-100 min-h-screen flex flex-col items-center justify-center">
+<header class="mb-8 w-full" style="margin-top: 20px">
+    <nav class="bg-white shadow p-6 rounded-lg flex justify-between items-center w-full max-w-6xl mx-auto">
+        <h1 class="text-2xl font-bold text-gray-700">投资详情页</h1>
+        <div>
+            <!-- Personal Home Page Link -->
+            <a href="<%=request.getContextPath()%>/user/profile"
+               class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+                个人主页
+            </a>
+
+            <!-- Logout Link -->
+            <a href="<%=request.getContextPath()%>/user/logout"
+               class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 ml-4">
+                登出
+            </a>
+        </div>
+    </nav>
+</header>
 <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl">
     <div class="text-center mb-6">
         <h1 class="text-2xl font-semibold text-gray-700">投资详情</h1>

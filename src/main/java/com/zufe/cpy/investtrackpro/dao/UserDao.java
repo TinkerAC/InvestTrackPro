@@ -61,19 +61,19 @@ public class UserDao {
      * @param user User对象
      * @return 如果删除成功返回true，否则返回false
      */
-    public boolean deleteUser(User user) {
+    public boolean deleteUser(int userId) {
 
         connection = DataBaseUtil.getConnection();
-        String sql = "DELETE FROM user WHERE username = ?";
+        String sql = "DELETE FROM user WHERE user_id = ?";
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
             ps = connection.prepareStatement(sql);
-            ps.setString(1, user.getUsername());
+            ps.setInt(1, userId);
             ps.execute();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error deleting user", e);
             return false;
         } finally {
             DataBaseUtil.closeJDBC(connection, ps, rs);
@@ -87,36 +87,71 @@ public class UserDao {
      * @return 如果更新成功返回true，否则返回false
      */
     public boolean updateUser(User user) {
+        int userId = user.getUserId();
 
+        String selectSql = "SELECT username, password, email, phone, first_name, last_name, address FROM user WHERE user_id = ?";
+        String updateSql = "UPDATE user SET username = ?, password = ?, email = ?, phone = ?, first_name = ?, last_name = ?, address = ?, updated_at = ? WHERE user_id = ?";
 
-        int userId = findByEmail(user.getEmail()).getUserId();
-        //如果找不到用户，返回false
-        if (userId == -1) {
-            return false;
-        }
-        connection = DataBaseUtil.getConnection();
-        String sql = "UPDATE user SET username=?,password=?,email=?,phone=?,first_name=?,last_name=?,address=? WHERE user_id=?";
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = connection.prepareStatement(sql);
-            ps.setString(1, user.getUsername());
-            ps.setString(2, user.getPassword());
-            ps.setString(3, user.getEmail());
-            ps.setString(4, user.getPhone());
-            ps.setString(5, user.getFirstName());
-            ps.setString(6, user.getLastName());
-            ps.setString(7, user.getAddress());
-            ps.setInt(8, userId);
-            ps.execute();
-            return true;
+        try (Connection connection = DataBaseUtil.getConnection();
+             PreparedStatement selectPs = connection.prepareStatement(selectSql);
+             PreparedStatement updatePs = connection.prepareStatement(updateSql)) {
+
+            connection.setAutoCommit(false); // 启用事务
+
+            // 获取当前用户数据
+            selectPs.setInt(1, userId);
+            try (ResultSet rs = selectPs.executeQuery()) {
+                if (rs.next()) {
+                    String currentUsername = rs.getString("username");
+                    String currentPassword = rs.getString("password");
+                    String currentEmail = rs.getString("email");
+                    String currentPhone = rs.getString("phone");
+                    String currentFirstName = rs.getString("first_name");
+                    String currentLastName = rs.getString("last_name");
+                    String currentAddress = rs.getString("address");
+
+                    // 使用传入的User对象更新字段，如果字段为空则保持当前值
+                    String newUsername = user.getUsername() != null ? user.getUsername() : currentUsername;
+                    String newPassword = user.getPassword() != null ? user.getPassword() : currentPassword;
+                    String newEmail = user.getEmail() != null ? user.getEmail() : currentEmail;
+                    String newPhone = user.getPhone() != null ? user.getPhone() : currentPhone;
+                    String newFirstName = user.getFirstName() != null ? user.getFirstName() : currentFirstName;
+                    String newLastName = user.getLastName() != null ? user.getLastName() : currentLastName;
+                    String newAddress = user.getAddress() != null ? user.getAddress() : currentAddress;
+
+                    // 更新用户数据
+                    updatePs.setString(1, newUsername);
+                    updatePs.setString(2, newPassword);
+                    updatePs.setString(3, newEmail);
+                    updatePs.setString(4, newPhone);
+                    updatePs.setString(5, newFirstName);
+                    updatePs.setString(6, newLastName);
+                    updatePs.setString(7, newAddress);
+                    updatePs.setTimestamp(8, new Timestamp(System.currentTimeMillis()));
+                    updatePs.setInt(9, userId);
+
+                    updatePs.executeUpdate();
+                    connection.commit(); // 提交事务
+                    return true;
+                } else {
+                    connection.rollback(); // 回滚事务
+                    logger.error("User with ID " + userId + " not found");
+                }
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        } finally {
-            DataBaseUtil.closeJDBC(connection, ps, rs);
+            logger.error("Error updating user", e);
+            try {
+                if (connection != null) {
+                    connection.rollback(); // 回滚事务
+                }
+            } catch (SQLException rollbackEx) {
+                logger.error("Error during rollback", rollbackEx);
+            }
         }
+
+        return false;
     }
+
 
     /**
      * 根据用户名查找用户

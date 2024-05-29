@@ -116,4 +116,15 @@ public class AdminService {
     }
 
 
+    public boolean updateUser(User user) {
+
+
+        return userDao.updateUser(user);
+    }
+
+    public void deleteUser(int userId) {
+
+        userDao.deleteUser(userId);
+
+    }
 }

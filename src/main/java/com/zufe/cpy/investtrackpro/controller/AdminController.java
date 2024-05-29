@@ -1,5 +1,7 @@
 package com.zufe.cpy.investtrackpro.controller;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.zufe.cpy.investtrackpro.model.Asset;
 import com.zufe.cpy.investtrackpro.model.Investment;
 import com.zufe.cpy.investtrackpro.model.InvestmentRecord;
@@ -14,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -28,7 +31,6 @@ public class AdminController extends HttpServlet {
     private final AdminService adminService = new AdminService();
     private final InvestmentService investmentService = new InvestmentService();
     private final AssetService assetService = new AssetService();
-
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String action = request.getPathInfo();
@@ -69,10 +71,82 @@ public class AdminController extends HttpServlet {
             case "/randomSell":
                 addRandomSellInvestmentRecord(request, response);
                 break;
+            case "/editUser":
+                editUser(request, response);
+                break;
+            case "/deleteUser":
+                deleteUser(request, response);
+                break;
             default:
                 showNotFoundPage(request, response);
                 break;
 
+        }
+
+
+    }
+
+    private void deleteUser(HttpServletRequest request, HttpServletResponse response) {
+
+        // 读取JSON数据
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader reader = request.getReader()) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+        } catch (Exception e) {
+            logger.error("传入数据错误");
+            return;
+        }
+        // 将JSON数据转换为Java对象
+        Gson gson = new Gson();
+        JsonObject jsonObject = gson.fromJson(sb.toString(), JsonObject.class);
+
+        int userId = Integer.parseInt(jsonObject.get("userId").getAsString());
+
+
+        adminService.deleteUser(userId);
+    }
+
+    private void editUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // 读取JSON数据
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader reader = request.getReader()) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+        } catch (Exception e) {
+            logger.error("传入数据错误");
+            return;
+        }
+        // 将JSON数据转换为Java对象
+        Gson gson = new Gson();
+        JsonObject jsonObject = gson.fromJson(sb.toString(), JsonObject.class);
+
+        // 获取数据字段
+        int userId = Integer.parseInt(jsonObject.get("userId").getAsString());
+        String phone = jsonObject.get("phone").getAsString();
+        String userName = jsonObject.get("userName").getAsString();
+        String address = jsonObject.get("address").getAsString();
+
+        // 处理数据（例如更新数据库）
+        User user = new User();
+        user.setUserId(userId);
+        user.setPhone(phone);
+        user.setUsername(userName);
+        user.setAddress(address);
+
+        boolean updateSuccess = adminService.updateUser(user);
+
+        // 发送响应
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        if (updateSuccess) {
+            response.getWriter().write("{\"status\":\"success\"}");
+        } else {
+            response.getWriter().write("{\"status\":\"error\"}");
         }
 
 
