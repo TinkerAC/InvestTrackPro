@@ -111,7 +111,8 @@
     <div class="footer-container">
         <div class="footer-column">
             <h3>InvestTrackPro</h3>
-            <p>123 投资大道, 投资城市, 投资国 12345</p>
+            <p>地址:浙江省杭州市下沙高教园区学源街18号 </p>
+            <p>邮政编码: 314423</p>
             <p>电话: (123) 456-7890</p>
             <p>邮箱: support@investtrackpro.com</p>
         </div>
