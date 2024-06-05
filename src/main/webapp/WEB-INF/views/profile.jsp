@@ -21,10 +21,14 @@
         }
 
         .bg-custom {
-            background-image: url("../images/background.webp");
+            background-image: url("<c:url value="/images/background.webp"/>");
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+        }
+
+        main {
+            flex: 1;
         }
     </style>
 </head>
@@ -44,10 +48,10 @@
         </div>
     </nav>
 </header>
-<div class="min-h-screen flex items-center justify-center mt-2 mb-2">
-    <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-lg mt-2 mb-2">
+<div class="min-h-screen flex items-center justify-center">
+    <div class="bg-white p-12 rounded-lg shadow-xl w-full max-w-2xl mt-4 mb-4">
         <div class="text-center mb-6">
-            <h1 class="text-2xl font-semibold text-gray-700">个人资料</h1>
+            <h1 class="text-3xl font-semibold text-gray-700">个人资料</h1>
         </div>
         <div class="text-center">
             <c:choose>
@@ -68,15 +72,13 @@
                     <p class="text-gray-600">
                         注册时长: <%= diffInDays %> 天 <%= diffInHours %> 小时 <%= diffInMinutes %> 分钟
                     </p>
-
-
                 </c:when>
                 <c:otherwise>
                     <h2 class="text-xl font-medium text-red-600">您尚未登录</h2>
                 </c:otherwise>
             </c:choose>
         </div>
-        <div class="mt-4 text-center space-y-4">
+        <div class="mt-6 text-center space-y-4">
             <c:if test="${not empty sessionScope.user}">
                 <button onclick="window.location.href='${pageContext.request.contextPath}/user/delete'"
                         class="bg-red-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
