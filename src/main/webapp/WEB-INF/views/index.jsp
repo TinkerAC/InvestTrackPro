@@ -10,7 +10,12 @@
     <!-- 添加Font Awesome图标库 -->
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet"/>
+
     <link href="css/styles.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 引入Bootstrap JS和Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 
     <style>
         body {
@@ -18,6 +23,19 @@
             background-color: #f4f4f4;
             margin: 0;
             padding: 0;
+        }
+
+        /* 自定义轮播图样式 */
+        .carousel-item img {
+            height: 420px;
+            object-fit: cover;
+        }
+
+        /* 响应式布局 */
+        @media (max-width: 768px) {
+            .carousel-item img {
+                height: 300px;
+            }
         }
     </style>
 </head>
@@ -47,6 +65,37 @@
         </div>
     </div>
 </nav>
+
+<!-- 轮播图 -->
+<div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+
+    <!-- The slideshow -->
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img src="../images/image4.jpeg" class="d-block w-100" alt="Image 1">
+        </div>
+        <div class="carousel-item">
+            <img src="../images/image5.jpeg" class="d-block w-100" alt="Image 2">
+        </div>
+        <div class="carousel-item">
+            <img src="../images/image6.jpg" class="d-block w-100" alt="Image 3">
+        </div>
+    </div>
+
+    <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
 
 <!-- 主体内容 -->
 <div class="container mx-auto px-6 py-16">
