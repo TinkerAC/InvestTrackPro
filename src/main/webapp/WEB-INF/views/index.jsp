@@ -28,11 +28,22 @@
                 height: 300px;
             }
         }
+
+        .navbar-fixed {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .content {
+            margin-top: 80px; /* 根据导航栏的高度进行调整 */
+        }
     </style>
 </head>
 <body class="bg-blue-100">
 <!-- 顶端导航栏 -->
-<nav class="bg-white shadow-md">
+<nav class="bg-white shadow-md navbar-fixed">
     <div class="container mx-auto px-6 py-4 flex justify-between items-center">
         <div class="text-xl font-bold text-gray-800">InvestTrackPro</div>
         <div>
@@ -59,7 +70,7 @@
 </nav>
 
 <!-- 轮播图 -->
-<div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
+<div id="myCarousel" class="carousel slide content" data-bs-ride="carousel">
     <div class="carousel-indicators">
         <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true"
                 aria-label="Slide 1"></button>
@@ -88,7 +99,7 @@
 </div>
 
 <!-- 主体内容 -->
-<div class="container mx-auto px-6 py-16">
+<div class="container mx-auto px-6 py-16 content">
     <div class="text-center">
         <h1 class="text-6xl font-semibold text-gray-800">欢迎来到 InvestTrackPro</h1>
         <p class="text-gray-600 mt-4">
@@ -118,7 +129,7 @@
             </div>
             <div class="bg-white p-6 rounded-lg shadow-md w-full md:w-1/3 m-4 transform hover:scale-105 transition-transform duration-300">
                 <div class="text-center">
-                    <div class="bg-yellow-500 text-white w-16 h-16 flex items-center justify-center rounded-full mx-auto">
+                    <div class="bg-yellow-500 text-white w-16 h-16 flex items中心 justify-center rounded-full mx-auto">
                         <i class="fas fa-lightbulb text-3xl"></i>
                     </div>
                     <h3 class="text-xl font-medium text-gray-800 mt-4">专业建议</h3>

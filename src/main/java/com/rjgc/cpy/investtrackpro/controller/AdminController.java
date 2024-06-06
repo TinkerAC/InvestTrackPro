@@ -232,6 +232,8 @@ public class AdminController extends HttpServlet {
 
     private void addRandomUser(HttpServletRequest request, HttpServletResponse response) {
         adminService.addRandomUser(5);
+
+        request.setAttribute("message", "随机用户添加成功!");
         showAdminIndexPage(request, response);
     }
 
