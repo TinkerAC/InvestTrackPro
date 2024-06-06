@@ -153,7 +153,7 @@
             },
             animation: {
                 duration: 1000,
-                easing: 'easeInOutBounce'
+                easing: "easeInOutExpo"
             }
         }
     });

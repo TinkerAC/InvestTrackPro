@@ -1,11 +1,5 @@
-<%@ page import="java.io.PrintWriter" %><%--
-  Created by IntelliJ IDEA.
-  User: 20586
-  Date: 2024/5/18
-  Time: 16:31
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page contentType="text/html;charset=UTF-8"  %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,13 +8,12 @@
     <title>InvestTrack Pro - 登录页</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet"/>
-    <link href="css/styles.css" rel="stylesheet">
     <style>
         body {
-            font-family: 'Open Sans', sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
+            background-image: url("<c:url value='/images/login-bg.jpg'/>");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
     </style>
     <script>
@@ -71,19 +64,14 @@
 <div class="bg-white shadow-xl rounded-lg overflow-hidden flex flex-col max-w-md w-full">
     <div class="w-full p-6">
         <h1 class="text-2xl font-semibold text-gray-800 text-center mb-6">登录页</h1>
-        <%
-            String e = (String) request.getAttribute("error");
-            if (e != null && !e.isEmpty()) {
-        %>
-        <div class="bg-red-100 text-red-700 p-3 rounded mb-4 text-center">
-            <%= e %>
-        </div>
-        <%
-            }
-        %>
+        <c:if test="${not empty error}">
+            <div class="bg-red-100 text-red-700 p-3 rounded mb-4 text-center">
+                    ${error}
+            </div>
+        </c:if>
         <form id="loginForm" action="login" method="post" class="space-y-4">
             <div>
-                <label for="email" class="block text-gray-700 text-sm font-semibold mb-2">用户名:</label>
+                <label for="email" class="block text-gray-700 text-sm font-semibold mb-2">邮箱:</label>
                 <input type="text" id="email" name="email" required class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm">
             </div>
             <div>
@@ -119,7 +107,5 @@
         </div>
     </div>
 </div>
-
-
 </body>
 </html>

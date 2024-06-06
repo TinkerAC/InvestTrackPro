@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -11,10 +12,10 @@
 
     <style>
         body {
-            font-family: 'Open Sans', sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
+            background-image: url("<c:url value="/images/login-bg.jpg"/>");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
     </style>
 </head>
@@ -39,12 +40,12 @@
                 <input type="text" id="username" name="username" required class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm">
             </div>
             <div>
-                <label for="password" class="block text-gray-700 text-sm font-semibold mb-2">密码:</label>
-                <input type="password" id="password" name="password" required class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm">
-            </div>
-            <div>
                 <label for="email" class="block text-gray-700 text-sm font-semibold mb-2">邮箱:</label>
                 <input type="email" id="email" name="email" required class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm">
+            </div>
+            <div>
+                <label for="password" class="block text-gray-700 text-sm font-semibold mb-2">密码:</label>
+                <input type="password" id="password" name="password" required class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm">
             </div>
             <div>
                 <input type="submit" value="注册" class="w-full bg-indigo-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 cursor-pointer">

@@ -203,6 +203,7 @@ public class UserController extends HttpServlet {
 
         // 检查用户是否存在
         boolean isUserExist = userService.isUserExist(email);
+
         if (!isUserExist) {
             request.setAttribute("error", "您还没有注册，请先注册！");
             showLoginForm(request, response);

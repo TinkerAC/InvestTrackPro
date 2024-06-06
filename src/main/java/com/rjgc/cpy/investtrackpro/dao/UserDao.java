@@ -185,9 +185,6 @@ public class UserDao {
     }
 
     public User findByEmail(String email) {
-        if (!SecurityUtil.isValidEmail(email)) {
-            return null;
-        }
 
         connection = DataBaseUtil.getConnection();
         String sql = "SELECT * FROM user WHERE email = ?";
