@@ -9,12 +9,14 @@ import com.rjgc.cpy.investtrackpro.model.User;
 import com.rjgc.cpy.investtrackpro.service.AdminService;
 import com.rjgc.cpy.investtrackpro.service.AssetService;
 import com.rjgc.cpy.investtrackpro.service.InvestmentService;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,142 +25,80 @@ import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.List;
 
-@WebServlet("/admin/*")
-public class AdminController extends HttpServlet {
-
+@Controller
+@RequestMapping("/admin")
+public class AdminController {
 
     private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
-    private final AdminService adminService = new AdminService();
-    private final InvestmentService investmentService = new InvestmentService();
-    private final AssetService assetService = new AssetService();
-    @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String action = request.getPathInfo();
 
-        if (action == null) {
-            action = "/";
-        }
+    @Autowired
+    private AdminService adminService;
 
-        switch (action) {
-            case "/":
-                showAdminIndexPage(request, response);
-                break;
-            case "/user"://查看用户列表
-                showUserList(request, response);
-                break;
-            case "/investment"://查看投资列表
-                showInvestmentList(request, response);
-                break;
-            case "/investmentRecord"://查看交易记录列表
-                showInvestmentRecordList(request, response);
-                break;
-            case "/madeInHaven"://模拟时间过一天
-                madeInHaven(request, response);
-                break;
-            case "/resetSystem"://重置系统
-                resetSystem(request, response);
-                break;
-            case "/logout":
-                request.getSession().invalidate();
-                response.sendRedirect(request.getContextPath() + "/");
-                break;
-            case "/randomUser":
-                addRandomUser(request, response);
-                break;
-            case "/randomBuy":
-                addRandomBoughtInvestmentRecord(request, response);
-                break;
-            case "/randomSell":
-                addRandomSellInvestmentRecord(request, response);
-                break;
-            case "/editUser":
-                editUser(request, response);
-                break;
-            case "/deleteUser":
-                deleteUser(request, response);
-                break;
-            default:
-                showNotFoundPage(request, response);
-                break;
+    @Autowired
+    private InvestmentService investmentService;
 
-        }
+    @Autowired
+    private AssetService assetService;
 
-
+    @GetMapping("/")
+    public String showAdminIndexPage(Model model) {
+        return "admin/admin"; // 返回视图名称
     }
 
-    private void deleteUser(HttpServletRequest request, HttpServletResponse response) {
-
-        // 读取JSON数据
-        StringBuilder sb = new StringBuilder();
-        try (BufferedReader reader = request.getReader()) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
-            }
-        } catch (Exception e) {
-            logger.error("传入数据错误");
-            return;
-        }
-        // 将JSON数据转换为Java对象
-        Gson gson = new Gson();
-        JsonObject jsonObject = gson.fromJson(sb.toString(), JsonObject.class);
-
-        int userId = Integer.parseInt(jsonObject.get("userId").getAsString());
-
-
-        adminService.deleteUser(userId);
+    @GetMapping("/user")
+    public String showUserList(Model model) {
+        List<User> users = adminService.getUserList();
+        model.addAttribute("users", users);
+        return "admin/userList";
     }
 
-    private void editUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // 读取JSON数据
-        StringBuilder sb = new StringBuilder();
-        try (BufferedReader reader = request.getReader()) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
-            }
-        } catch (Exception e) {
-            logger.error("传入数据错误");
-            return;
-        }
-        // 将JSON数据转换为Java对象
-        Gson gson = new Gson();
-        JsonObject jsonObject = gson.fromJson(sb.toString(), JsonObject.class);
-
-        // 获取数据字段
-        int userId = Integer.parseInt(jsonObject.get("userId").getAsString());
-        String phone = jsonObject.get("phone").getAsString();
-        String userName = jsonObject.get("userName").getAsString();
-        String address = jsonObject.get("address").getAsString();
-
-        // 处理数据（例如更新数据库）
-        User user = new User();
-        user.setUserId(userId);
-        user.setPhone(phone);
-        user.setUsername(userName);
-        user.setAddress(address);
-
-        boolean updateSuccess = adminService.updateUser(user);
-
-        // 发送响应
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        if (updateSuccess) {
-            response.getWriter().write("{\"status\":\"success\"}");
-        } else {
-            response.getWriter().write("{\"status\":\"error\"}");
-        }
-
-
+    @GetMapping("/investment")
+    public String showInvestmentList(Model model) {
+        List<Investment> investments = investmentService.getInvestmentList();
+        model.addAttribute("investments", investments);
+        return "admin/investmentList";
     }
 
-    // 为每个用户随机买入5次随机份额的随机投资
-    private void addRandomBoughtInvestmentRecord(HttpServletRequest request, HttpServletResponse response) {
+    @GetMapping("/investmentRecord")
+    public String showInvestmentRecordList(Model model) {
+        List<InvestmentRecord> investmentRecords = investmentService.getInvestmentRecordList();
+        model.addAttribute("investmentRecords", investmentRecords);
+        return "admin/investmentRecordList";
+    }
+
+    @PostMapping("/madeInHaven")
+    public String madeInHaven(Model model) {
+        adminService.madeInHaven();
+        model.addAttribute("message", "模拟时间流逝成功!");
+        return "admin/admin";
+    }
+
+    @PostMapping("/resetSystem")
+    public String resetSystem(Model model) {
+        adminService.resetSystem();
+        model.addAttribute("message", "系统重置成功!");
+        return "admin/admin";
+    }
+
+    @PostMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        request.getSession().invalidate();
+        return "redirect:/";
+    }
+
+    @PostMapping("/randomUser")
+    public String addRandomUser(Model model) {
+        adminService.addRandomUser(5);
+        model.addAttribute("message", "随机用户添加成功!");
+        return "admin/admin";
+    }
+
+    @PostMapping("/randomBuy")
+    public String addRandomBoughtInvestmentRecord(Model model) {
         List<User> users = adminService.getUserList();
         List<Investment> investments = investmentService.getInvestmentList();
 
         for (User user : users) {
-            // 每个用户随机买入5次
             Collections.shuffle(investments);
             for (int i = 0; i < 5; i++) {
                 Investment randomInvestment = investments.get(i);
@@ -179,7 +119,6 @@ public class AdminController extends HttpServlet {
                     continue;
                 }
 
-                // 随机买入0~15份，保留两位小数
                 BigDecimal randomAmount = BigDecimal.valueOf(Math.random() * 15).setScale(2, RoundingMode.HALF_UP);
 
                 boolean isSuccess = assetService.addBoughtInvestmentRecord(user.getUserId(), randomInvestment.getInvestmentId(), assetId, randomAmount);
@@ -189,13 +128,12 @@ public class AdminController extends HttpServlet {
             }
         }
 
-
-        request.setAttribute("message", "随机买入成功!");
-        showAdminIndexPage(request, response);
+        model.addAttribute("message", "随机买入成功!");
+        return "admin/admin";
     }
 
-    // 为每个用户随机卖出部分持有的投资
-    private void addRandomSellInvestmentRecord(HttpServletRequest request, HttpServletResponse response) {
+    @PostMapping("/randomSell")
+    public String addRandomSellInvestmentRecord(Model model) {
         List<User> users = adminService.getUserList();
 
         for (User user : users) {
@@ -208,13 +146,10 @@ public class AdminController extends HttpServlet {
                 int investmentId = asset.getInvestmentId();
                 int assetId = asset.getAssetId();
 
-                // 获取最新持有量
                 BigDecimal holdingAmount = assetService.getAssetAmount(user.getUserId(), investmentId);
                 BigDecimal randomAmount = BigDecimal.valueOf(Math.random() * holdingAmount.doubleValue()).setScale(2, RoundingMode.HALF_UP);
 
-                // 确保不会卖出超过持有量
                 if (holdingAmount.compareTo(randomAmount) >= 0) {
-                    // 添加卖出记录
                     boolean sellSuccess = assetService.addSoldInvestmentRecord(user.getUserId(), investmentId, assetId, randomAmount);
 
                     if (sellSuccess) {
@@ -225,82 +160,43 @@ public class AdminController extends HttpServlet {
                 }
             }
         }
-        request.setAttribute("message", "随机卖出成功!");
-        showAdminIndexPage(request, response);
+        model.addAttribute("message", "随机卖出成功!");
+        return "admin/admin";
     }
 
+    @PostMapping("/editUser")
+    public ResponseEntity<String> editUser(@RequestBody JsonObject jsonObject) {
+        int userId = Integer.parseInt(jsonObject.get("userId").getAsString());
+        String phone = jsonObject.get("phone").getAsString();
+        String userName = jsonObject.get("userName").getAsString();
+        String address = jsonObject.get("address").getAsString();
 
-    private void addRandomUser(HttpServletRequest request, HttpServletResponse response) {
-        adminService.addRandomUser(5);
+        User user = new User();
+        user.setUserId(userId);
+        user.setPhone(phone);
+        user.setUsername(userName);
+        user.setAddress(address);
 
-        request.setAttribute("message", "随机用户添加成功!");
-        showAdminIndexPage(request, response);
-    }
+        boolean updateSuccess = adminService.updateUser(user);
 
-    private void resetSystem(HttpServletRequest request, HttpServletResponse response) {
-        adminService.resetSystem();
-        request.setAttribute("message", "系统重置成功!");
-        showAdminIndexPage(request, response);
-    }
-
-    private void madeInHaven(HttpServletRequest request, HttpServletResponse response) {
-        adminService.madeInHaven();
-        request.setAttribute("message", "模拟时间流逝成功!");
-        showAdminIndexPage(request, response);
-    }
-
-    private void showInvestmentRecordList(HttpServletRequest request, HttpServletResponse response) {
-        List<InvestmentRecord> investmentRecords = investmentService.getInvestmentRecordList();
-        request.setAttribute("investmentRecords", investmentRecords);
-
-        try {
-            request.getRequestDispatcher("/WEB-INF/views/admin/investmentRecordList.jsp").forward(request, response);
-        } catch (Exception e) {
-            logger.error("Error in showInvestmentRecordList", e);
+        if (updateSuccess) {
+            return ResponseEntity.ok("{\"status\":\"success\"}");
+        } else {
+            return ResponseEntity.status(500).body("{\"status\":\"error\"}");
         }
     }
 
-    private void showInvestmentList(HttpServletRequest request, HttpServletResponse response) {
-        List<Investment> investments = investmentService.getInvestmentList();
-        request.setAttribute("investments", investments);
-        try {
-            request.getRequestDispatcher("/WEB-INF/views/admin/investmentList.jsp").forward(request, response);
-        } catch (Exception e) {
-            logger.error("Error in showInvestmentList", e);
-        }
+    @DeleteMapping("/deleteUser")
+    public ResponseEntity<String> deleteUser(@RequestBody JsonObject jsonObject) {
+        int userId = Integer.parseInt(jsonObject.get("userId").getAsString());
+        adminService.deleteUser(userId);
+        return ResponseEntity.ok("{\"status\":\"success\"}");
     }
 
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        doGet(request, response);
+    @ExceptionHandler(Exception.class)
+    public String handleError(Model model, Exception e) {
+        logger.error("Error in AdminController", e);
+        model.addAttribute("message", "系统错误，请联系管理员!");
+        return "admin/admin";
     }
-
-
-    private void showUserList(HttpServletRequest request, HttpServletResponse response) {
-
-        List<User> users = adminService.getUserList();
-        request.setAttribute("users", users);
-        try {
-            request.getRequestDispatcher("/WEB-INF/views/admin/userList.jsp").forward(request, response);
-        } catch (Exception e) {
-            logger.error("Error in showUserList", e);
-        }
-    }
-
-    private void showNotFoundPage(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            request.getRequestDispatcher("/WEB-INF/views/404.jsp").forward(request, response);
-        } catch (Exception e) {
-            logger.error("Error in showNotFoundPage", e);
-        }
-    }
-
-    private void showAdminIndexPage(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            request.getRequestDispatcher("/WEB-INF/views/admin/admin.jsp").forward(request, response);
-        } catch (Exception e) {
-            logger.error("Error in showAdminIndexPage", e);
-        }
-    }
-
-
 }

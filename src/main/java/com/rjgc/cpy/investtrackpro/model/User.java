@@ -1,22 +1,48 @@
 package com.rjgc.cpy.investtrackpro.model;
 
+import jakarta.persistence.*;
 
 import java.sql.Timestamp;
 
+@Entity
+@Table(name = "user")
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private int userId;
+
+    @Column(name = "username")
     private String username;
+
+    @Column(name = "password")
     private String password;
+
+    @Column(name = "email")
     private String email;
+
+    @Column(name = "phone")
     private String phone;
+
+    @Column(name = "first_name")
     private String firstName;
+
+    @Column(name = "last_name")
     private String lastName;
+
+    @Column(name = "address")
     private String address;
+
+    @Column(name = "created_at")
     private Timestamp createdAt;
+
+    @Column(name = "updated_at")
     private Timestamp updatedAt;
+
+    @Column(name = "role")
     private String role;
 
-    // 无参和全参构造方法
+    //constructor
     public User() {
     }
 
@@ -50,7 +76,7 @@ public class User {
                 '}';
     }
 
-    // getter和setter方法
+    // getters and setters
 
     public int getUserId() {
         return userId;

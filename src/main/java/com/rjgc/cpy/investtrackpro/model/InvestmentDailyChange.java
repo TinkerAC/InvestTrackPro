@@ -1,22 +1,51 @@
 package com.rjgc.cpy.investtrackpro.model;
 
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 
+@Entity
+@Table(name = "investment_daily_change")
 public class InvestmentDailyChange {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "change_id")
     private int ChangeId;
+
+    @Column(name = "investment_id")
     private int investmentId;
+
+    @Column(name = "opening_value")
     private BigDecimal openingValue;
+
+    @Column(name = "closing_value")
     private BigDecimal closingValue;
+
+    @Column(name = "high_value")
     private BigDecimal highValue;
+
+    @Column(name = "low_value")
     private BigDecimal lowValue;
+
+    @Column(name = "date")
     private Date date;
+
+    @Column(name = "volume")
     private BigDecimal volume;
+
+    @Column(name = "created_at")
     private Timestamp createdAt;
+
+    @Column(name = "change_percent")
     private BigDecimal changePercent;
+
+    @Column(name = "change_value")
     private BigDecimal changeValue;
 
+    //constructors
     public InvestmentDailyChange() {
     }
 
@@ -37,7 +66,6 @@ public class InvestmentDailyChange {
 
 
     //getters and setters
-
     public BigDecimal getVolume() {
         return volume;
     }

@@ -36,7 +36,6 @@ public class AssetDao {
                         rs.getBigDecimal("holding_profit"),
                         rs.getBigDecimal("total_sell_revenue")
                 ));
-
             }
 
             return assets;

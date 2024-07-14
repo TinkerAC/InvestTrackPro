@@ -9,12 +9,15 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
+
+
+
 @WebFilter(urlPatterns = {"/user/profile", "/user/logout", "/asset/*", "/admin/*"})
 public class AuthenticationFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        // Filter initialization code if needed
+
     }
 
     @Override
