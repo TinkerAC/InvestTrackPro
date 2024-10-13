@@ -9,6 +9,15 @@
 - **数据报表查看**:查看投资总收益、持有收益等数据和图表分析
 - **基于 Servlet 的后端**：使用 Java Servlets 进行高效的数据处理。
 
+## 屏幕截图
+![描述](images/main.png)
+![描述](images/login.png)
+![描述](images/investment.png)
+![描述](images/assets.png)
+![描述](images/detail.png)
+![描述](images/report.png)
+
+
 ## 使用的技术
 
 - **前端**：JSP、HTML、CSS、JavaScript
@@ -27,7 +36,6 @@
 4. 将项目部署到 Apache Tomcat 服务器上。
 
 ## 使用方法
-
 - 部署后，打开浏览器并导航到 `http://localhost:8080/InvestTrackPro`。
 - 注册新用户或使用已有的凭据登录。
 - 开始添加你的投资并可视化你的投资组合。
