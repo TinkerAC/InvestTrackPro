@@ -6,7 +6,7 @@
 
 - **用户注册和登录**：用户可以安全地注册和登录，以管理他们的投资组合。
 - **投资组合管理**：添加、更新和跟踪各种资产的投资。
-- **交互式图表**：可视化资产分配和投资组合的增长情况。
+- **数据报表查看**:查看投资总收益、持有收益等数据和图表分析
 - **基于 Servlet 的后端**：使用 Java Servlets 进行高效的数据处理。
 
 ## 使用的技术
@@ -20,7 +20,7 @@
 
 1. 克隆仓库：
    ```sh
-   git clone https://github.com/yourusername/investment-portfolio.git
+   git clone https://github.com/TinkerAC/InvestTrackPro.git
    ```
 2. 将项目导入到你喜欢的 IDE（例如 IntelliJ IDEA、Eclipse）。
 3. 使用提供的 SQL 脚本（`database.sql`）设置 MySQL 数据库。
@@ -28,14 +28,13 @@
 
 ## 使用方法
 
-- 部署后，打开浏览器并导航到 `http://localhost:8080/investment-portfolio`。
+- 部署后，打开浏览器并导航到 `http://localhost:8080/InvestTrackPro`。
 - 注册新用户或使用已有的凭据登录。
 - 开始添加你的投资并可视化你的投资组合。
 
 ## 贡献
-
-欢迎 fork 本仓库并提交 pull requests。所有的贡献都是非常欢迎的，让这个项目变得更好！
-
+~~欢迎 fork 本仓库并提交 pull requests。所有的贡献都是非常欢迎的，让这个项目变得更好！~~
+项目基本不再维护.
 ## 许可证
 
 本项目采用 MIT 许可证。详情请参阅 `LICENSE` 文件。
@@ -46,4 +45,3 @@
 - 项目的灵感来自市面上常见的投资管理工具。
 
 ---
-如果你有任何问题或建议，请随时打开 issue 或通过 GitHub 与我联系！
