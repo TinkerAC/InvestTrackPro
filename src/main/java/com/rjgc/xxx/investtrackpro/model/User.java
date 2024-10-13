@@ -1,4 +1,4 @@
-package com.rjgc.cpy.investtrackpro.model;
+package com.rjgc.xxx.investtrackpro.model;
 
 import jakarta.persistence.*;
 

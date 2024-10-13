@@ -1,7 +1,7 @@
-package com.rjgc.cpy.investtrackpro.dao;
+package com.rjgc.xxx.investtrackpro.dao;
 
-import com.rjgc.cpy.investtrackpro.model.InvestmentDailyChange;
-import com.rjgc.cpy.investtrackpro.util.DataBaseUtil;
+import com.rjgc.xxx.investtrackpro.model.InvestmentDailyChange;
+import com.rjgc.xxx.investtrackpro.util.DataBaseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;

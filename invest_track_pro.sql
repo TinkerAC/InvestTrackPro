@@ -476,7 +476,7 @@ CREATE TABLE `user`  (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (8, 'su', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'super@gmail.com', '18758834142', 'py', 'c', 'zufe', '2024-05-25 00:24:04', '2024-05-25 12:27:12', 'admin');
+INSERT INTO `user` VALUES (8, 'su', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'super@gmail.com', '18888888888', 'py', 'c', 'xxxx', '2024-05-25 00:24:04', '2024-05-25 12:27:12', 'admin');
 INSERT INTO `user` VALUES (14, NULL, '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'user160@qq.com', NULL, NULL, NULL, NULL, '2024-05-28 18:57:42', '2024-05-28 18:57:42', 'user');
 INSERT INTO `user` VALUES (15, NULL, '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'user182@qq.com', NULL, NULL, NULL, NULL, '2024-05-28 18:57:42', '2024-05-28 18:57:42', 'user');
 INSERT INTO `user` VALUES (16, NULL, '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'user743@qq.com', NULL, NULL, NULL, NULL, '2024-05-28 18:57:42', '2024-05-28 18:57:42', 'user');

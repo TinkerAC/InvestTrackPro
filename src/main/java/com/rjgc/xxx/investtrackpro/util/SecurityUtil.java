@@ -1,4 +1,4 @@
-package com.rjgc.cpy.investtrackpro.util;
+package com.rjgc.xxx.investtrackpro.util;
 
 import java.security.MessageDigest;
 import java.nio.charset.StandardCharsets;

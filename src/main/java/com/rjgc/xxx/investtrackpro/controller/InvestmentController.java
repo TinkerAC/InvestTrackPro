@@ -1,11 +1,11 @@
-package com.rjgc.cpy.investtrackpro.controller;
+package com.rjgc.xxx.investtrackpro.controller;
 
 
 import com.google.gson.Gson;
-import com.rjgc.cpy.investtrackpro.model.Investment;
-import com.rjgc.cpy.investtrackpro.model.InvestmentDailyChange;
-import com.rjgc.cpy.investtrackpro.model.InvestmentRecord;
-import com.rjgc.cpy.investtrackpro.service.InvestmentService;
+import com.rjgc.xxx.investtrackpro.model.Investment;
+import com.rjgc.xxx.investtrackpro.model.InvestmentDailyChange;
+import com.rjgc.xxx.investtrackpro.model.InvestmentRecord;
+import com.rjgc.xxx.investtrackpro.service.InvestmentService;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

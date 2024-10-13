@@ -1,6 +1,6 @@
 <%@ page import="java.util.Date" %>
 <%@ page import="java.util.concurrent.TimeUnit" %>
-<%@ page import="com.rjgc.cpy.investtrackpro.model.User" %>
+<%@ page import="com.rjgc.xxx.investtrackpro.model.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>

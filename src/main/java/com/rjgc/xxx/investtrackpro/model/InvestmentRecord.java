@@ -1,43 +1,17 @@
-package com.rjgc.cpy.investtrackpro.model;
-
+package com.rjgc.xxx.investtrackpro.model;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "investment_record")
 public class InvestmentRecord implements Cloneable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "investment_record_id")
     private int investmentRecordId;
-
-    @Column(name = "investment_id")
     private int investmentId;
-
-    @Column(name = "user_id")
     private int userId;
-
-    @Column(name = "amount")
     private BigDecimal amount;
-
-    @Column(name = "current_prize")
     private BigDecimal currentPrize;//交易发生时的价格
-
-    @Column(name = "operation")
     private String operation;//"买入"、"卖出"
-
-    @Column(name = "status")
     private String status;//"买入":持有中,已卖出; "卖出":"无"
-
-    @Column(name = "created_at")
     private Timestamp createdAt;
-
-    @Column(name = "updated_at")
     private Timestamp updatedAt;
-
-    @Column(name = "asset_id")
     private int assetId;
 
 

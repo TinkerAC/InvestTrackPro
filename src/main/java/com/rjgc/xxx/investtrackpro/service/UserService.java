@@ -1,8 +1,8 @@
-package com.rjgc.cpy.investtrackpro.service;
+package com.rjgc.xxx.investtrackpro.service;
 
-import com.rjgc.cpy.investtrackpro.dao.UserDao;
-import com.rjgc.cpy.investtrackpro.model.User;
-import com.rjgc.cpy.investtrackpro.util.SecurityUtil;
+import com.rjgc.xxx.investtrackpro.dao.UserDao;
+import com.rjgc.xxx.investtrackpro.model.User;
+import com.rjgc.xxx.investtrackpro.util.SecurityUtil;
 
 public class UserService {
 
